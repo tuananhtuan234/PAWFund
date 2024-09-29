@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.Models
+namespace Services.Models.Request
 {
-    public class LoginModel
+    public class LoginRequest
     {
         [Required]
         [MaxLength(50)]

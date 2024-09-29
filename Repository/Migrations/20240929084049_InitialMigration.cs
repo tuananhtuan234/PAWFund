@@ -6,23 +6,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class PawFund_Migration_1 : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Payment",
+                name: "User",
                 columns: table => new
                 {
-                    PaymentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DonationId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Method = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payment", x => x.PaymentId);
+                    table.PrimaryKey("PK_User", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -30,10 +34,10 @@ namespace Repository.Migrations
                 columns: table => new
                 {
                     ShelterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ShelterName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", maxLength: 12, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ShelterDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -41,6 +45,61 @@ namespace Repository.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shelter", x => x.ShelterId);
+                    table.ForeignKey(
+                        name: "FK_Shelter_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Adoption",
+                columns: table => new
+                {
+                    AdoptionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ShelterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AdoptionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AdoptionStatus = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Adoption", x => x.AdoptionId);
+                    table.ForeignKey(
+                        name: "FK_Adoption_Shelter_ShelterId",
+                        column: x => x.ShelterId,
+                        principalTable: "Shelter",
+                        principalColumn: "ShelterId");
+                    table.ForeignKey(
+                        name: "FK_Adoption_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Donation",
+                columns: table => new
+                {
+                    DonationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ShelterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Amount = table.Column<float>(type: "real", nullable: false),
+                    DonationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Donation", x => x.DonationId);
+                    table.ForeignKey(
+                        name: "FK_Donation_Shelter_ShelterId",
+                        column: x => x.ShelterId,
+                        principalTable: "Shelter",
+                        principalColumn: "ShelterId");
+                    table.ForeignKey(
+                        name: "FK_Donation_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -61,8 +120,7 @@ namespace Repository.Migrations
                         name: "FK_Event_Shelter_ShelterId",
                         column: x => x.ShelterId,
                         principalTable: "Shelter",
-                        principalColumn: "ShelterId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "ShelterId");
                 });
 
             migrationBuilder.CreateTable(
@@ -89,91 +147,26 @@ namespace Repository.Migrations
                         column: x => x.ShelterId,
                         principalTable: "Shelter",
                         principalColumn: "ShelterId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Payment",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Number = table.Column<int>(type: "int", maxLength: 12, nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_User_Shelter_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Shelter",
-                        principalColumn: "ShelterId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Adoption",
-                columns: table => new
-                {
-                    AdoptionId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ShelterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AdoptionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AdoptionStatus = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Adoption", x => x.AdoptionId);
-                    table.ForeignKey(
-                        name: "FK_Adoption_Shelter_ShelterId",
-                        column: x => x.ShelterId,
-                        principalTable: "Shelter",
-                        principalColumn: "ShelterId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Adoption_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Donation",
-                columns: table => new
-                {
+                    PaymentId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DonationId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ShelterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Amount = table.Column<float>(type: "real", nullable: false),
-                    DonationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Method = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Donation", x => x.DonationId);
+                    table.PrimaryKey("PK_Payment", x => x.PaymentId);
                     table.ForeignKey(
-                        name: "FK_Donation_Payment_DonationId",
+                        name: "FK_Payment_Donation_DonationId",
                         column: x => x.DonationId,
-                        principalTable: "Payment",
-                        principalColumn: "PaymentId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Donation_Shelter_ShelterId",
-                        column: x => x.ShelterId,
-                        principalTable: "Shelter",
-                        principalColumn: "ShelterId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Donation_User_UserId",
-                        column: x => x.UserId,
-                        principalTable: "User",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalTable: "Donation",
+                        principalColumn: "DonationId");
                 });
 
             migrationBuilder.CreateTable(
@@ -192,14 +185,12 @@ namespace Repository.Migrations
                         name: "FK_UserEvent_Event_EventId",
                         column: x => x.EventId,
                         principalTable: "Event",
-                        principalColumn: "EventId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "EventId");
                     table.ForeignKey(
                         name: "FK_UserEvent_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -228,9 +219,21 @@ namespace Repository.Migrations
                 column: "ShelterId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payment_DonationId",
+                table: "Payment",
+                column: "DonationId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pet_ShelterId",
                 table: "Pet",
                 column: "ShelterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shelter_UserId",
+                table: "Shelter",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserEvent_EventId",
@@ -250,7 +253,7 @@ namespace Repository.Migrations
                 name: "Adoption");
 
             migrationBuilder.DropTable(
-                name: "Donation");
+                name: "Payment");
 
             migrationBuilder.DropTable(
                 name: "Pet");
@@ -259,16 +262,16 @@ namespace Repository.Migrations
                 name: "UserEvent");
 
             migrationBuilder.DropTable(
-                name: "Payment");
+                name: "Donation");
 
             migrationBuilder.DropTable(
                 name: "Event");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Shelter");
 
             migrationBuilder.DropTable(
-                name: "Shelter");
+                name: "User");
         }
     }
 }

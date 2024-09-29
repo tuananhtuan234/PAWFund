@@ -12,8 +12,8 @@ using Repository.Data.Entity;
 namespace Repository.Migrations
 {
     [DbContext(typeof(PawFundDbContext))]
-    [Migration("20240925155721_Test_2")]
-    partial class Test_2
+    [Migration("20240929084049_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -197,9 +197,9 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PhoneNumber")
-                        .HasMaxLength(12)
-                        .HasColumnType("int");
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ShelterDate")
                         .HasColumnType("datetime2");
@@ -236,11 +236,11 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Number")
-                        .HasMaxLength(12)
-                        .HasColumnType("int");
-
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

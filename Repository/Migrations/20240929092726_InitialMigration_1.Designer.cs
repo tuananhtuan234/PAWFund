@@ -12,8 +12,8 @@ using Repository.Data.Entity;
 namespace Repository.Migrations
 {
     [DbContext(typeof(PawFundDbContext))]
-    [Migration("20240922062615_PawFund_Migration_1")]
-    partial class PawFund_Migration_1
+    [Migration("20240929092726_InitialMigration_1")]
+    partial class InitialMigration_1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -118,7 +118,7 @@ namespace Repository.Migrations
 
                     b.Property<string>("DonationId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Method")
                         .HasColumnType("int");
@@ -127,6 +127,9 @@ namespace Repository.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("PaymentId");
+
+                    b.HasIndex("DonationId")
+                        .IsUnique();
 
                     b.ToTable("Payment");
                 });
@@ -194,9 +197,12 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PhoneNumber")
-                        .HasMaxLength(12)
-                        .HasColumnType("int");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ShelterDate")
                         .HasColumnType("datetime2");
@@ -207,9 +213,12 @@ namespace Repository.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ShelterId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Shelter");
                 });
@@ -230,11 +239,11 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Number")
-                        .HasMaxLength(12)
-                        .HasColumnType("int");
-
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -279,13 +288,13 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Data.Entity.Shelter", "Shelter")
                         .WithMany("Adoptions")
                         .HasForeignKey("ShelterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Repository.Data.Entity.User", "User")
                         .WithMany("Adoptions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Shelter");
@@ -295,25 +304,17 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.Data.Entity.Donation", b =>
                 {
-                    b.HasOne("Repository.Data.Entity.Payment", "Payment")
-                        .WithOne("Donation")
-                        .HasForeignKey("Repository.Data.Entity.Donation", "DonationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Repository.Data.Entity.Shelter", "Shelter")
                         .WithMany("Donations")
                         .HasForeignKey("ShelterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Repository.Data.Entity.User", "User")
                         .WithMany("Donations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Payment");
 
                     b.Navigation("Shelter");
 
@@ -325,10 +326,21 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Data.Entity.Shelter", "Shelter")
                         .WithMany("Events")
                         .HasForeignKey("ShelterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Shelter");
+                });
+
+            modelBuilder.Entity("Repository.Data.Entity.Payment", b =>
+                {
+                    b.HasOne("Repository.Data.Entity.Donation", "Donation")
+                        .WithOne("Payment")
+                        .HasForeignKey("Repository.Data.Entity.Payment", "DonationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Donation");
                 });
 
             modelBuilder.Entity("Repository.Data.Entity.Pet", b =>
@@ -336,21 +348,21 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Data.Entity.Shelter", "Shelter")
                         .WithMany("Pets")
                         .HasForeignKey("ShelterId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Shelter");
                 });
 
-            modelBuilder.Entity("Repository.Data.Entity.User", b =>
+            modelBuilder.Entity("Repository.Data.Entity.Shelter", b =>
                 {
-                    b.HasOne("Repository.Data.Entity.Shelter", "Shelter")
-                        .WithOne("User")
-                        .HasForeignKey("Repository.Data.Entity.User", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("Repository.Data.Entity.User", "User")
+                        .WithOne("Shelter")
+                        .HasForeignKey("Repository.Data.Entity.Shelter", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Shelter");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Repository.Data.Entity.UserEvent", b =>
@@ -358,13 +370,13 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Data.Entity.Event", "Event")
                         .WithMany("UserEvents")
                         .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Repository.Data.Entity.User", "User")
                         .WithMany("UserEvents")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Event");
@@ -372,15 +384,15 @@ namespace Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Repository.Data.Entity.Donation", b =>
+                {
+                    b.Navigation("Payment")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Repository.Data.Entity.Event", b =>
                 {
                     b.Navigation("UserEvents");
-                });
-
-            modelBuilder.Entity("Repository.Data.Entity.Payment", b =>
-                {
-                    b.Navigation("Donation")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Repository.Data.Entity.Shelter", b =>
@@ -392,9 +404,6 @@ namespace Repository.Migrations
                     b.Navigation("Events");
 
                     b.Navigation("Pets");
-
-                    b.Navigation("User")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Repository.Data.Entity.User", b =>
@@ -402,6 +411,9 @@ namespace Repository.Migrations
                     b.Navigation("Adoptions");
 
                     b.Navigation("Donations");
+
+                    b.Navigation("Shelter")
+                        .IsRequired();
 
                     b.Navigation("UserEvents");
                 });
