@@ -25,8 +25,7 @@ namespace Repository.Data.Entity
         public string FullName { get; set; }
 
         [Required]
-        [MaxLength(12)]
-        public int Number {  get; set; }
+        public string PhoneNumber {  get; set; }
 
         public RoleStatus Role { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;

@@ -26,8 +26,7 @@ namespace Repository.Data.Entity
         [Required]
         public string Address { get; set; }
         [Required]
-        [MaxLength(12)]
-        public int PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required]
         [EmailAddress]
@@ -35,7 +34,7 @@ namespace Repository.Data.Entity
 
         public string? Description { get; set; }
         public DateTime ShelterDate { get; set; }
-
+        public bool IsDeleted { get; set; }
         public ICollection<Adoption> Adoptions { get; set; } = new List<Adoption>();
         public ICollection<Pet> Pets { get; set; } = new List<Pet>();
         public ICollection<Donation> Donations { get; set; } = new List<Donation>();

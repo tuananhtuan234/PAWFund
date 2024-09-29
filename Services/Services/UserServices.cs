@@ -3,6 +3,7 @@ using Repository.Data.Enum;
 using Repository.Interface;
 using Repository.Models;
 using Services.Interface;
+using Services.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace Services.Services
                 Email = userDTO.Email,
                 Password = userDTO.Password,
                 FullName = userDTO.FullName,
-                Number = userDTO.Number,
+                PhoneNumber = userDTO.PhoneNumber,
                 Role = userDTO.Role,
                 CreatedDate = DateTime.Now,
                 UpdatedDate = null
@@ -70,7 +71,7 @@ namespace Services.Services
             existingUser.Email = userDTO.Email;
             existingUser.Password = userDTO.Password;
             existingUser.FullName = userDTO.FullName;
-            existingUser.Number = userDTO.Number;
+            existingUser.PhoneNumber = userDTO.PhoneNumber;
             existingUser.Role = userDTO.Role;
             existingUser.CreatedDate = DateTime.Now;
             existingUser.UpdatedDate = DateTime.Now;
