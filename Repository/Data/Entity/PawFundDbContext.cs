@@ -44,48 +44,71 @@ namespace Repository.Data.Entity
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<User>()
+            .HasOne(u => u.Shelter)
+            .WithOne(s => s.User)
+            .HasForeignKey<Shelter>(s => s.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
 
-            // User
-            modelBuilder.Entity<User>().HasKey(u => u.UserId);
+            modelBuilder.Entity<Adoption>()
+            .HasOne(a => a.User)
+            .WithMany(u => u.Adoptions)
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
 
-            // User - Donation
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Donations).WithOne(d => d.User).HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Restrict);
-            // User - Shelter
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.Shelter).WithOne(s => s.User).HasForeignKey<User>(s => s.UserId).OnDelete(DeleteBehavior.Restrict);
-            // User - Adoption
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Adoptions).WithOne(a => a.User).HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Restrict);
-            // User - UserEvent
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.UserEvents).WithOne(aue=> aue.User).HasForeignKey(u => u.UserId).OnDelete(DeleteBehavior.Restrict);
 
-            //donation
-            //Donation - Shelter
+            modelBuilder.Entity<Adoption>()
+            .HasOne(a => a.Shelter)
+            .WithMany(s => s.Adoptions)
+            .HasForeignKey(a => a.ShelterId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
             modelBuilder.Entity<Donation>()
-                .HasOne(d => d.Shelter).WithMany(s => s.Donations).HasForeignKey(s => s.ShelterId).OnDelete(DeleteBehavior.Restrict);
-            //Donation - Payment
+            .HasOne(d => d.User)
+            .WithMany(u => u.Donations)
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
             modelBuilder.Entity<Donation>()
-                .HasOne(d => d.Payment).WithOne(p => p.Donation).HasForeignKey<Donation>(d => d.DonationId).OnDelete(DeleteBehavior.Restrict);
+            .HasOne(d => d.Shelter)
+            .WithMany(s => s.Donations)
+            .HasForeignKey(d => d.ShelterId)
+            .OnDelete(DeleteBehavior.NoAction);
 
-            //Shelter
-            // Shelter - Adoption
-            modelBuilder.Entity<Shelter>()
-                .HasMany(s => s.Adoptions).WithOne(a => a.Shelter).HasForeignKey(s => s.ShelterId).OnDelete(DeleteBehavior.Restrict);
-            // Shelter - Pet
-            modelBuilder.Entity<Shelter>()
-                .HasMany(s => s.Pets).WithOne(p => p.Shelter).HasForeignKey(s => s.ShelterId).OnDelete(DeleteBehavior.Restrict);
-            // Shelter - Event
-            modelBuilder.Entity<Shelter>()
-                .HasMany(s => s.Events).WithOne(e => e.Shelter).HasForeignKey(s => s.ShelterId).OnDelete(DeleteBehavior.Restrict);
 
-            // Event
-            // Event - UserEvent
             modelBuilder.Entity<Event>()
-                .HasMany(e => e.UserEvents).WithOne(ue => ue.Event).HasForeignKey(e => e.EventId).OnDelete(DeleteBehavior.Restrict);
+            .HasOne(e => e.Shelter)
+            .WithMany(s => s.Events)
+            .HasForeignKey(e => e.ShelterId)
+            .OnDelete(DeleteBehavior.NoAction);
 
+
+            modelBuilder.Entity<UserEvent>()
+            .HasOne(ue => ue.User)
+            .WithMany(u => u.UserEvents)
+            .HasForeignKey(ue => ue.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<UserEvent>()
+            .HasOne(ue => ue.Event)
+            .WithMany(e => e.UserEvents)
+            .HasForeignKey(ue => ue.EventId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<Payment>()
+            .HasOne(p => p.Donation)
+            .WithOne(d => d.Payment)
+            .HasForeignKey<Payment>(p => p.DonationId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+
+            // Add more Fluent API configurations as needed
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
