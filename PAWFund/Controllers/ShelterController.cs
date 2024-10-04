@@ -20,7 +20,7 @@ namespace PAWFund.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddShelter([FromBody]ShelterRequest shelterRequest)
         {
             var shelter = await shelterService.AddShelter(shelterRequest);
