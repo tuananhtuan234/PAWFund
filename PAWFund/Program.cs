@@ -28,6 +28,9 @@ namespace PAWFund
             builder.Services.AddScoped<IPetService, PetService>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();   
 
+            builder.Services.AddScoped<IDonationServices, DonationServices>();
+            builder.Services.AddScoped<IDonationRepository, DonationRepository>();
+
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddSingleton(sp =>
                     sp.GetRequiredService<IOptions<AppSetting>>().Value);
