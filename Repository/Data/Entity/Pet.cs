@@ -18,13 +18,16 @@ namespace Repository.Data.Entity
         [ForeignKey("ShelterId")]
         public string ShelterId { get; set; }
         public Shelter Shelter { get; set; }
+
         [Required]
         public string Name { get; set; }
         public bool Gender { get; set; }
         public int Ages { get; set; }
         public string? Description { get; set; }
+
         [Required]
         public string Species { get; set; }
+
         [Required]
         public string Breed { get; set; }
         public DateTime CreateDate { get; set; } = DateTime.Now;

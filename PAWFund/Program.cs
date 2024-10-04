@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Repository;
 using Repository.Data.Entity;
 using Repository.Interface;
 using Repository.Models;
@@ -23,6 +24,9 @@ namespace PAWFund
             // Add services to the container.
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            builder.Services.AddScoped<IPetService, PetService>();
+            builder.Services.AddScoped<IPetRepository, PetRepository>();   
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddSingleton(sp =>
