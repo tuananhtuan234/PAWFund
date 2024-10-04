@@ -11,6 +11,7 @@ namespace Services.Models.Response
 {
     public class ShelterResponse
     {
+        public string ShelterId { get; set; }   
         public string UserName { get; set; }
         public string ShelterName { get; set; }
         public string? Address { get; set; }

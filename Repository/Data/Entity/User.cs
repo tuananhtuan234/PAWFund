@@ -33,7 +33,6 @@ namespace Repository.Data.Entity
         public bool IsDeleted { get; set; }
         public bool Status {  get; set; }   
         public Shelter Shelter { get; set; }
-
         public ICollection<Adoption> Adoptions { get; set; } = new List<Adoption>();
         public ICollection<Donation> Donations { get; set; } = new List<Donation>();
         public ICollection<UserEvent> UserEvents { get; set; } = new List<UserEvent>();

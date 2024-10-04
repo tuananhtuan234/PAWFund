@@ -90,6 +90,7 @@ namespace Services.Services
                 {
                     var shelterResponse = new ShelterResponse()
                     {
+                        ShelterId = shelter.ShelterId,
                         Address = shelter.Address,
                         Description = shelter.Description,
                         Email = shelter.Email,
@@ -144,8 +145,8 @@ namespace Services.Services
 
                 if (!string.IsNullOrEmpty(shelterRequest.UserId))
                 {
-                    var checkUser = await userRepository.GetUserById(shelterRequest.UserId);
-                    if (checkUser == null)
+                    var checkUser = await userRepository.GetUser(shelterRequest.UserId, null, null);
+                    if (!checkUser.Any())
                     {
                         return ServiceResponse<string>.ErrorResponse("UserId does not exist");
                     }
