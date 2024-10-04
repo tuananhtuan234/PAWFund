@@ -30,32 +30,38 @@ namespace PAWFund
             var secretKey = builder.Configuration["AppSettings:SecretKey"];
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            builder.Services.AddAuthentication(options =>
             {
-                opt.TokenValidationParameters = new TokenValidationParameters
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-
+                    ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                    ValidAudience = builder.Configuration["AppSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:SecretKey"])),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
-
-                    ClockSkew = TimeSpan.Zero
                 };
             });
 
             builder.Services.AddDbContext<PawFundDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("PawFundDatabase"))); // Assuming you're using SQL Server, adjust if using another database
 
-            //builder.Services.AddAuthorization(opt =>
-            //{
-            //    opt.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-            //    opt.AddPolicy("Shelter_Staff", policy => policy.RequireRole("Shelter_Staff"));
-            //    opt.AddPolicy("Adopters", policy => policy.RequireRole("Adopters"));
-            //    opt.AddPolicy("Volunteers", policy => policy.RequireRole("Volunteers"));
-            //    opt.AddPolicy("Donors", policy => policy.RequireRole("Donors"));
+            builder.Services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+                opt.AddPolicy("Shelter_Staff", policy => policy.RequireRole("Shelter_Staff"));
+                opt.AddPolicy("Adopters", policy => policy.RequireRole("Adopters"));
+                opt.AddPolicy("Volunteers", policy => policy.RequireRole("Volunteers"));
+                opt.AddPolicy("Donors", policy => policy.RequireRole("Donors"));
 
-            //});
+            });
 
 
 
