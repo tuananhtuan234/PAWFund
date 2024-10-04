@@ -6,16 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Models.DTOs
+namespace Services.Models.Response
 {
-    public class UserDTO
+    public class UserResponse
     {
+        public string UserId { get; set; } 
         public string Email { get; set; }
         public string Password { get; set; }
         public string FullName { get; set; }
         public string PhoneNumber { get; set; }
         public RoleStatus Role { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
-        public DateTime? UpdatedDate { get; set; } = DateTime.Now;
+        public string CreatedDate { get; set; }
+        public string? UpdatedDate { get; set; }
+        public string Code { get; set; }
+        public bool IsDeleted { get; set; }
+        public bool Status { get; set; }
     }
 }

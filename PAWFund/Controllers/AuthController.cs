@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interface;
+using Services.Models.Request;
 using System.ComponentModel.DataAnnotations;
 
 namespace PAWFund.Controllers
@@ -17,11 +18,11 @@ namespace PAWFund.Controllers
         }
 
         [HttpGet("Login")]
-        public async Task<IActionResult> Login([FromQuery][Required] string username, [FromQuery][Required] string password)
+        public async Task<IActionResult> Login([FromQuery][Required] string email, [FromQuery][Required] string password)
         {
             try
             {
-                var result = await _authenService.Login(username, password);
+                var result = await _authenService.Login(email, password);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -30,7 +31,17 @@ namespace PAWFund.Controllers
             }
         }
 
-        //[HttpPost("Register")]
-        //public Task<IActionResult> Register([FromBody][])
+        [HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody][Required] UserRequest userRequest, [FromQuery] string? code)
+        {
+            try
+            {
+                return Ok(await _authenService.Register(userRequest, code));
+            }
+            catch (Exception ex) 
+            { 
+                throw new Exception(ex.Message);    
+            }
+        }
     }
 }

@@ -18,31 +18,26 @@ namespace Repository.Repository
             _context = context;
         }
 
-        public async Task<List<User>> GetAllUser(string searchterm)
+        public async Task<List<User>> GetUser(string searchterm, string email, string password)
         {
             try
             {
-
+                IQueryable<User> query = _context.Users;
                 if (!string.IsNullOrWhiteSpace(searchterm))
                 {
-                    return await _context.Users.Where(sc => sc.FullName.Contains(searchterm)).ToListAsync();
+                    query = query.Where(u => u.FullName.Contains(searchterm) || u.UserId == searchterm || u.Code == searchterm);
                 }
-                return await _context.Users.ToListAsync();
+                if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrEmpty(password))
+                { 
+                    query = query.Where(u => u.Email == email && u.Password == password);
+                }
+
+                return await query.ToListAsync();
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-        }
-
-        public async Task<User> GetUserById(string UserId)
-        {
-            return await _context.Users.FirstOrDefaultAsync(sc => sc.UserId.Equals(UserId));
-        }
-
-        public async Task<User> Login(string email, string password)
-        {
-            return await _context.Users.FirstOrDefaultAsync(sc => sc.Email.Equals(email) && sc.Password.Equals(password));
         }
         public async Task<bool> AddUser(User user)
         {
@@ -56,14 +51,10 @@ namespace Repository.Repository
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task DeleteUser(string UserId)
+        public async Task DeleteUser(User user)
         {
-            User user = await GetUserById(UserId);
-            if (user != null)
-            {
-                _context.Remove(user);
-                await _context.SaveChangesAsync();
-            }
+            _context.Remove(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

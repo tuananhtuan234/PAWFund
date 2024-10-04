@@ -9,11 +9,9 @@ namespace Repository.Interface
 {
     public interface IUserRepository
     {
-        Task<List<User>> GetAllUser(string searchterm);
-        Task<User> GetUserById(string UserId);
-        Task<User> Login(string email, string password);
+        Task<List<User>> GetUser(string searchterm, string email, string password);
         Task<bool> AddUser(User user);
         Task<bool> UpdateUser(User user);
-        Task DeleteUser(string UserId);
+        Task DeleteUser(User user);
     }
 }
