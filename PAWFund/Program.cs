@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repository.Data.Entity;
@@ -23,6 +24,10 @@ namespace PAWFund
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddSingleton(sp =>
+                    sp.GetRequiredService<IOptions<AppSetting>>().Value);
+
             builder.Services.AddScoped<IShelterService, ShelterService>();
             builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
 
@@ -31,6 +36,12 @@ namespace PAWFund
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 
             builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -53,6 +64,7 @@ namespace PAWFund
             builder.Services.AddDbContext<PawFundDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("PawFundDatabase"))); // Assuming you're using SQL Server, adjust if using another database
 
+
             builder.Services.AddAuthorization(opt =>
             {
                 opt.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
@@ -65,37 +77,36 @@ namespace PAWFund
 
 
 
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
+            builder.Services.AddSwaggerGen(options =>
             {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme",
-                    Name = "Authorization",
                     In = ParameterLocation.Header,
+                    Description = "Please enter token in the form 'Bearer {token}'",
+                    Name = "Authorization",
                     Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
                     Scheme = "bearer"
                 });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
                 {
+                    new OpenApiSecurityScheme
                     {
-                        new OpenApiSecurityScheme
+                        Reference = new OpenApiReference
                         {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header
-
-                        },
-                    Array.Empty<string>()
-                    }
-                });
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
             });
 
             var app = builder.Build();
