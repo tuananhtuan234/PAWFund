@@ -15,7 +15,8 @@ namespace Services.Models.Response
         public string Password { get; set; }
         public string FullName { get; set; }
         public string PhoneNumber { get; set; }
-        public RoleStatus Role { get; set; }
+        public string Address { get; set; }
+        public string Role { get; set; }
         public string CreatedDate { get; set; }
         public string? UpdatedDate { get; set; }
         public string Code { get; set; }

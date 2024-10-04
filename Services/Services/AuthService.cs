@@ -113,6 +113,7 @@ namespace Services.Services
                     Password = userRequest.Password,
                     Role = Enum.Parse<RoleStatus>(userRequest.Role.ToString()),
                     UpdatedDate = null,
+                    Address = userRequest.Address,
                 };
                 var result = await _userRepository.AddUser(user);
                 if (result)

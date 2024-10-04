@@ -1,4 +1,5 @@
-﻿using Repository.Data.Enum;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Repository.Data.Enum;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,18 +15,14 @@ namespace Repository.Data.Entity
     {
         [Key]
         public string AdoptionId { get; set; } = Guid.NewGuid().ToString();
-
         [ForeignKey("UserId")]
         public string UserId { get; set; }
         public User User { get; set; }
-
-        [ForeignKey("ShelterId")]
-        public string ShelterId { get; set; }
-        public Shelter Shelter { get; set; }    
-
+        [ForeignKey("PetId")]
+        public string PetId { get; set; }
+        public ICollection<Pet> Pets { get; set; } = new List<Pet>();    
         public DateTime AdoptionDate { get; set; } = DateTime.Now;
         public AdoptionStatus AdoptionStatus { get; set; }
-
-
+        public string? Reason { get; set; }
     }
 }
