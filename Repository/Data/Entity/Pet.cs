@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Repository.Data.Enum;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,7 +18,6 @@ namespace Repository.Data.Entity
         [ForeignKey("ShelterId")]
         public string ShelterId { get; set; }
         public Shelter Shelter { get; set; }
-
         [Required]
         public string Name { get; set; }
         public bool Gender { get; set; }
@@ -27,14 +27,11 @@ namespace Repository.Data.Entity
         public string Species { get; set; }
         [Required]
         public string Breed { get; set; }
-
-        [MaxLength]
-        public string Images { get; set; }
-
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime? UpdateDate { get; set; } = DateTime.Now;
+        public PetStatus Status { get; set; }
 
-
+        public ICollection<Image> Images { get; set; } = new List<Image>();
 
     }
 }
