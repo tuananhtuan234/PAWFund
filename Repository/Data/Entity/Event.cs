@@ -19,7 +19,6 @@ namespace Repository.Data.Entity
         [ForeignKey("ShelterId")]
         public string ShelterId { get; set; }
         public Shelter Shelter { get; set; }
-
         public string EventName { get; set; }
         public string EventDescription { get; set; }
         public DateTime EventDate { get; set; }

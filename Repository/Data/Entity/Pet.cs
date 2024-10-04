@@ -24,10 +24,8 @@ namespace Repository.Data.Entity
         public bool Gender { get; set; }
         public int Ages { get; set; }
         public string? Description { get; set; }
-
         [Required]
         public string Species { get; set; }
-
         [Required]
         public string Breed { get; set; }
         public DateTime CreateDate { get; set; } = DateTime.Now;
@@ -35,6 +33,7 @@ namespace Repository.Data.Entity
         public PetStatus Status { get; set; }
 
         public ICollection<Image> Images { get; set; } = new List<Image>();
+        public Adoption Adoption { get; set; }
 
     }
 }

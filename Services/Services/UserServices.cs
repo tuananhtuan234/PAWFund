@@ -68,8 +68,9 @@ namespace Services.Services
                     IsDeleted = user.IsDeleted,
                     Password = user.Password,
                     PhoneNumber = user.PhoneNumber,
-                    Role = user.Role,
-                    Status = user.Status
+                    Role = user.Role.ToString(),
+                    Status = user.Status,
+                    Address = user.Address,
                 };
                 return ServiceResponse<UserResponse>.SuccessResponseWithMessage(userResponse);
             }
@@ -137,6 +138,7 @@ namespace Services.Services
                     user.Role = (RoleStatus)userRequest.Role;
                     user.Status = true;
                     user.UpdatedDate = DateTime.UtcNow;
+                    user.Address = userRequest.Address;
 
                     result = await _repository.UpdateUser(user);
                     if (result)

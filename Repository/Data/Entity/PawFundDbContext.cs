@@ -59,9 +59,9 @@ namespace Repository.Data.Entity
 
 
             modelBuilder.Entity<Adoption>()
-            .HasOne(a => a.Shelter)
-            .WithMany(s => s.Adoptions)
-            .HasForeignKey(a => a.ShelterId)
+            .HasMany(a => a.Pets)
+            .WithOne(s => s.Adoption)
+            .HasForeignKey(a => a.PetId)
             .OnDelete(DeleteBehavior.NoAction);
 
 

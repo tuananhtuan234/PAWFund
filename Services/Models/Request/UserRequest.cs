@@ -22,6 +22,8 @@ namespace Services.Models.Request
         [Phone]
         public string PhoneNumber { get; set; }
         [Required]
+        public string Address { get; set; } 
+        [Required]
         public int Role { get; set; }
     }
 }
