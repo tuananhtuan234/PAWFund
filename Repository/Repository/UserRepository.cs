@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repository
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly PawFundDbContext _context;
 
@@ -20,13 +20,19 @@ namespace Repository.Repository
 
         public async Task<List<User>> GetAllUser(string searchterm)
         {
-            var query = _context.Users.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(searchterm))
+            try
             {
-                query = query.Where(sc => sc.FullName.Contains(searchterm) || sc.Email.Contains(searchterm));
+
+                if (!string.IsNullOrWhiteSpace(searchterm))
+                {
+                    return await _context.Users.Where(sc => sc.FullName.Contains(searchterm)).ToListAsync();
+                }
+                return await _context.Users.ToListAsync();
             }
-            var user = await query.ToListAsync();
-            return user;
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<User> GetUserById(string UserId)

@@ -42,6 +42,12 @@ namespace PAWFund
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters()
@@ -57,6 +63,20 @@ namespace PAWFund
 
             builder.Services.AddDbContext<PawFundDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("PawFundDatabase"))); // Assuming you're using SQL Server, adjust if using another database
+
+
+            builder.Services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+                opt.AddPolicy("Shelter_Staff", policy => policy.RequireRole("Shelter_Staff"));
+                opt.AddPolicy("Adopters", policy => policy.RequireRole("Adopters"));
+                opt.AddPolicy("Volunteers", policy => policy.RequireRole("Volunteers"));
+                opt.AddPolicy("Donors", policy => policy.RequireRole("Donors"));
+
+            });
+
+
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
