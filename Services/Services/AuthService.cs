@@ -90,59 +90,59 @@ namespace Services.Services
         public async Task<ServiceResponse<User>> Register(UserRequest userRequest, string? code)
         {
             var checkUser = await _userRepository.GetUser(userRequest.Email, null, null);
-            if (checkUser != null)
+            if (checkUser.Count != 0)
             {
-                return ServiceResponse<User>.ErrorResponse("Email existed");
+                if (checkUser.First().Status)
+                {
+                    return ServiceResponse<User>.ErrorResponse("Email existed");
+                }
+            }
+            if (string.IsNullOrEmpty(code))
+            {
+                string codeRandom = GenerateCode();
+                var user = new User()
+                {
+                    UserId = Guid.NewGuid().ToString(),
+                    Email = userRequest.Email,
+                    Code = codeRandom,
+                    CreatedDate = DateTime.Now,
+                    PhoneNumber = userRequest.PhoneNumber,
+                    FullName = userRequest.FullName,
+                    IsDeleted = false,
+                    Status = false,
+                    Password = userRequest.Password,
+                    Role = Enum.Parse<RoleStatus>(userRequest.Role.ToString()),
+                    UpdatedDate = null,
+                };
+                var result = await _userRepository.AddUser(user);
+                if (result)
+                {
+                    await _emailService.SendEmailAsync(userRequest.Email, "Confirm your account", $"Here is your code: {codeRandom}. Please enter this code to authenticate your account.");
+                    return ServiceResponse<User>.SuccessResponseOnlyMessage("The system has sent the code via email. Please enter the code");
+                }
+                else
+                {
+                    return ServiceResponse<User>.ErrorResponse("Add user failed");
+                }
             }
             else
             {
-                if (!string.IsNullOrEmpty(code)) 
+                var checkCode = await _userRepository.GetUser(code, null, null);
+                if (!checkCode.Any())
                 {
-                    string codeRandom = GenerateCode();
-                    var user = new User()
-                    {
-                        UserId = Guid.NewGuid().ToString(),
-                        Email = userRequest.Email,
-                        Code = codeRandom,
-                        CreatedDate = DateTime.Now,
-                        PhoneNumber = userRequest.PhoneNumber,
-                        FullName = userRequest.FullName,
-                        IsDeleted = false,
-                        Status = false,
-                        Password = userRequest.Password,
-                        Role = Enum.Parse<RoleStatus>(userRequest.Role.ToString()),
-                        UpdatedDate = null,
-                    };
-                    var result = await _userRepository.AddUser(user);
+                    return ServiceResponse<User>.ErrorResponse("Code wrong");
+                }
+                else
+                {
+                    checkCode.First().Status = true;
+                    var result = await _userRepository.UpdateUser(checkCode.First());
                     if (result)
                     {
-                        await _emailService.SendEmailAsync(userRequest.Email, "Confirm your account", $"Here is your code: {codeRandom}. Please enter this code to authenticate your account.");
-                        return ServiceResponse<User>.SuccessResponseOnlyMessage("The system has sent the code via email. Please enter the code");
+                        return ServiceResponse<User>.SuccessResponse(checkCode.First());
                     }
                     else
                     {
                         return ServiceResponse<User>.ErrorResponse("Add user failed");
-                    }
-                }
-                else
-                {
-                    var checkCode = await _userRepository.GetUser(code, null, null);
-                    if (!checkCode.Any())
-                    {
-                        return ServiceResponse<User>.ErrorResponse("Code wrong");
-                    }
-                    else
-                    {
-                        checkCode.First().Status = true;
-                        var result = await _userRepository.UpdateUser(checkCode.First());
-                        if (result)
-                        {
-                            return ServiceResponse<User>.SuccessResponse(checkCode.First());
-                        }
-                        else
-                        {
-                            return ServiceResponse<User>.ErrorResponse("Add user failed");
-                        }
                     }
                 }
             }

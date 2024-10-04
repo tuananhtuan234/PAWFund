@@ -2,6 +2,7 @@
 using Repository.Data.Enum;
 using Repository.Interface;
 using Repository.Models;
+using Services.Helper;
 using Services.Interface;
 using Services.Models.Request;
 using Services.Models.Response;
@@ -16,10 +17,12 @@ namespace Services.Services
     public class UserServices: IUserServices
     {
         private readonly IUserRepository _repository;
+        private readonly IEmailService _emailService;
 
-        public UserServices(IUserRepository repository)
+        public UserServices(IUserRepository repository, IEmailService emailService)
         {
             _repository = repository;
+            _emailService = emailService;
         }
 
         public async Task<ServiceResponse<User>> DeleteUser(string userId)
@@ -72,7 +75,18 @@ namespace Services.Services
             }
         }
 
-        public async Task<ServiceResponse<User>> UpdateUser(string userId, UserRequest userRequest)
+        private string GenerateCode(int length = 6)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+
+            string code = new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            return code;
+        }
+
+        public async Task<ServiceResponse<User>> UpdateUser(string userId, UserRequest userRequest, string? code)
         {
             var checkUser = await _repository.GetUser(userId, null, null);
             if (!checkUser.Any())
@@ -81,31 +95,62 @@ namespace Services.Services
             }
             else
             {
+                bool result = false;
                 User user = checkUser.First();
-                var updateUser = new User()
+                if (string.IsNullOrEmpty(code))
                 {
-                    UserId = userId,
-                    FullName = userRequest.FullName,
-                    Password = userRequest.Password,
-                    PhoneNumber = userRequest.PhoneNumber,  
-                    Email = userRequest.Email,
-                    CreatedDate = user.CreatedDate,
-                    Code = user.Code,
-                    IsDeleted= user.IsDeleted,
-                    Role = (RoleStatus)userRequest.Role,
-                    Status = user.Status,
-                    UpdatedDate = DateTime.UtcNow,
-                };
-                var result = await _repository.UpdateUser(updateUser);
-                if (result)
-                {
-                    return ServiceResponse<User>.SuccessResponseOnlyMessage();
+                    var checkEmai = await _repository.GetUser(userRequest.Email, null, null);
+                    if (checkEmai.Count() == 0)
+                    {
+                        string codeRandom = GenerateCode();
+
+                        user.Status = false;
+                        user.Code = codeRandom;
+
+                        result = await _repository.UpdateUser(user);
+                        if (result)
+                        {
+                            await _emailService.SendEmailAsync(userRequest.Email, "Confirm your account", $"Here is your code: {codeRandom}. Please enter this code to authenticate your account.");
+                            return ServiceResponse<User>.SuccessResponseOnlyMessage("The system has sent the code via email. Please enter the code");
+                        }
+                        else
+                        {
+                            return ServiceResponse<User>.ErrorResponse("Update failed");
+                        }
+                    }
                 }
-                else
+                else 
                 {
-                    return ServiceResponse<User>.ErrorResponse("Update failed");
+                    var checkCode = await _repository.GetUser(code, null, null);
+                    if (checkCode.Count() == 0)
+                    {
+                        return ServiceResponse<User>.ErrorResponse("Code wrong");
+                    }
+                    user.UserId = userId;
+                    user.FullName = userRequest.FullName;
+                    user.Password = userRequest.Password;
+                    user.PhoneNumber = userRequest.PhoneNumber;
+                    user.Email = userRequest.Email;
+                    user.CreatedDate = user.CreatedDate;
+                    user.Code = user.Code;
+                    user.IsDeleted = user.IsDeleted;
+                    user.Role = (RoleStatus)userRequest.Role;
+                    user.Status = true;
+                    user.UpdatedDate = DateTime.UtcNow;
+
+                    result = await _repository.UpdateUser(user);
+                    if (result)
+                    {
+                        return ServiceResponse<User>.SuccessResponseOnlyMessage();
+                    }
+                    else
+                    {
+                        return ServiceResponse<User>.ErrorResponse("Update failed");
+                    }
                 }
+
             }
+            return null;
         }
     }
 }
