@@ -22,10 +22,10 @@ namespace Repository.Repository
         {
             try
             {
-                IQueryable<User> query = _context.Users;
+                IQueryable<User> query = _context.Users.Where(u => u.IsDeleted == false);
                 if (!string.IsNullOrWhiteSpace(searchterm))
                 {
-                    query = query.Where(u => u.FullName.Contains(searchterm) || u.UserId == searchterm || u.Code == searchterm);
+                    query = query.Where(u => u.FullName.Contains(searchterm) || u.UserId == searchterm || u.Code == searchterm || u.Email == searchterm);
                 }
                 if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrEmpty(password))
                 { 

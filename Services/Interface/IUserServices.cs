@@ -14,7 +14,7 @@ namespace Services.Interface
     public interface IUserServices
     {
         Task<ServiceResponse<UserResponse>> GetUser(string searchterm);
-        Task<ServiceResponse<User>> UpdateUser(string userId, UserRequest user);
+        Task<ServiceResponse<User>> UpdateUser(string userId, UserRequest user, string? code);
         Task<ServiceResponse<User>> DeleteUser(string userId);
     }
 }

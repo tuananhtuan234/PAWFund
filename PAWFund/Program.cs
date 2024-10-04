@@ -9,6 +9,7 @@ using Repository.Data.Entity;
 using Repository.Interface;
 using Repository.Models;
 using Repository.Repository;
+using Services.Helper;
 using Services.Interface;
 using Services.Services;
 using System.Text;
@@ -37,6 +38,8 @@ namespace PAWFund
 
             builder.Services.AddScoped<IShelterService, ShelterService>();
             builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
+
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.Configure<AppSetting>(builder.Configuration.GetSection("AppSettings"));
             var secretKey = builder.Configuration["AppSettings:SecretKey"];

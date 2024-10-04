@@ -71,11 +71,11 @@ namespace PAWFund.Controllers
         }
 
         [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUser([FromQuery][Required] string userId, [FromBody] UserRequest userRequest)
+        public async Task<IActionResult> UpdateUser([FromQuery][Required] string userId, [FromBody] UserRequest userRequest, [FromQuery] string? code)
         {
             try
             {
-                var user = await _services.UpdateUser(userId, userRequest);
+                var user = await _services.UpdateUser(userId, userRequest, code);
                 return Ok(user);
             }
             catch (Exception ex)
