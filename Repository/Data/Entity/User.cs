@@ -26,12 +26,12 @@ namespace Repository.Data.Entity
 
         [Required]
         public string PhoneNumber {  get; set; }
-
         public RoleStatus Role { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime? UpdatedDate { get; set; } = DateTime.Now;
-
-
+        public string Code { get; set; }
+        public bool IsDeleted { get; set; }
+        public bool Status {  get; set; }   
         public Shelter Shelter { get; set; }
 
         public ICollection<Adoption> Adoptions { get; set; } = new List<Adoption>();

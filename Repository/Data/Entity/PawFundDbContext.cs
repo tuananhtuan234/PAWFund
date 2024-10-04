@@ -28,6 +28,7 @@ namespace Repository.Data.Entity
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<UserEvent> UserEvents { get; set; }
         public virtual DbSet<Event> Events { get; set; }
+        public virtual DbSet<Image> Images { get; set; }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -105,6 +106,11 @@ namespace Repository.Data.Entity
             .HasForeignKey<Payment>(p => p.DonationId)
             .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<Image>()
+            .HasOne(i => i.Pet)
+            .WithMany(p => p.Images)
+            .HasForeignKey(i => i.PetId)
+            .OnDelete(DeleteBehavior.NoAction);
 
             // Add more Fluent API configurations as needed
 
