@@ -12,8 +12,8 @@ using Repository.Data.Entity;
 namespace Repository.Migrations
 {
     [DbContext(typeof(PawFundDbContext))]
-    [Migration("20240929092726_InitialMigration_1")]
-    partial class InitialMigration_1
+    [Migration("20241002175841_dbinit")]
+    partial class dbinit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

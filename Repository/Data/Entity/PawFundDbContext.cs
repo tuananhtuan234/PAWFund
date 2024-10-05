@@ -40,7 +40,7 @@ namespace Repository.Data.Entity
         //}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-     => optionsBuilder.UseSqlServer("Server=localhost;Database=PawFundDB;Uid=sa;Password=12345;MultipleActiveResultSets=true;TrustServerCertificate=True");
+     => optionsBuilder.UseSqlServer("Server=(local);Database=PawFundDB;Uid=sa;Password=12345;MultipleActiveResultSets=true;TrustServerCertificate=True");
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

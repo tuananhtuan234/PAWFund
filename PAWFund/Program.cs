@@ -20,11 +20,18 @@ namespace PAWFund
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+            
+
+            builder.Services.AddScoped<IEventService, EventService>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
+
             builder.Services.AddScoped<IShelterService, ShelterService>();
             builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.Configure<AppSetting>(builder.Configuration.GetSection("AppSettings"));
             var secretKey = builder.Configuration["AppSettings:SecretKey"];
