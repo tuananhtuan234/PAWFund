@@ -34,7 +34,7 @@ namespace PAWFund.Controllers
         {
             try
             {
-                return Ok(await _services.GetUser(null));
+                return Ok(await _services.GetAllUser());
             }
             catch (Exception ex)
             {

@@ -145,7 +145,7 @@ namespace Services.Services
 
                 if (!string.IsNullOrEmpty(shelterRequest.UserId))
                 {
-                    var checkUser = await userRepository.GetUser(shelterRequest.UserId, null, null);
+                    var checkUser = await userRepository.GetUser(shelterRequest.UserId, null, null, null);
                     if (!checkUser.Any())
                     {
                         return ServiceResponse<string>.ErrorResponse("UserId does not exist");

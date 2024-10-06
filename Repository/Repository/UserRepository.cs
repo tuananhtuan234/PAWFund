@@ -18,7 +18,7 @@ namespace Repository.Repository
             _context = context;
         }
 
-        public async Task<List<User>> GetUser(string searchterm, string email, string password)
+        public async Task<List<User>> GetUser(string searchterm, string email, string password, string code)
         {
             try
             {
@@ -30,6 +30,10 @@ namespace Repository.Repository
                 if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrEmpty(password))
                 { 
                     query = query.Where(u => u.Email == email && u.Password == password);
+                }
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    query = query.Where(u => u.Code == code);
                 }
 
                 return await query.ToListAsync();

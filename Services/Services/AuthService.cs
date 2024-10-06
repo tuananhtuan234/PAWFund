@@ -33,7 +33,7 @@ namespace Services.Services
         {
             try
             {
-                var users = await _userRepository.GetUser(null, email, password);
+                var users = await _userRepository.GetUser(null, email, password, null);
                 User user = users.First();
                 if (user == null)
                 {
@@ -89,7 +89,7 @@ namespace Services.Services
 
         public async Task<ServiceResponse<User>> Register(UserRequest userRequest, string? code)
         {
-            var checkUser = await _userRepository.GetUser(userRequest.Email, null, null);
+            var checkUser = await _userRepository.GetUser(userRequest.Email, null, null, null);
             if (checkUser.Count != 0)
             {
                 if (checkUser.First().Status)
@@ -111,7 +111,7 @@ namespace Services.Services
                     IsDeleted = false,
                     Status = false,
                     Password = userRequest.Password,
-                    Role = Enum.Parse<RoleStatus>(userRequest.Role.ToString()),
+                    Role = (RoleStatus)userRequest.Role,
                     UpdatedDate = null,
                     Address = userRequest.Address,
                 };
@@ -128,7 +128,7 @@ namespace Services.Services
             }
             else
             {
-                var checkCode = await _userRepository.GetUser(code, null, null);
+                var checkCode = await _userRepository.GetUser(userRequest.Email, null, null, code);
                 if (!checkCode.Any())
                 {
                     return ServiceResponse<User>.ErrorResponse("Code wrong");
