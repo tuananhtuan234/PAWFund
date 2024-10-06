@@ -28,12 +28,11 @@ namespace Repository.Data.Entity
         public string Species { get; set; }
         [Required]
         public string Breed { get; set; }
+        public string? AdoptionId { get; set; }
+        public Adoption? Adoption { get; set; }
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime? UpdateDate { get; set; } = DateTime.Now;
         public PetStatus Status { get; set; }
-
         public ICollection<Image> Images { get; set; } = new List<Image>();
-        public Adoption Adoption { get; set; }
-
     }
 }

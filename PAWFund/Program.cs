@@ -41,6 +41,9 @@ namespace PAWFund
 
             builder.Services.AddScoped<IEmailService, EmailService>();
 
+            builder.Services.AddScoped<IAdoptionRepository, AdoptionRepository>();
+            builder.Services.AddScoped<IAdoptionService, AdoptionService>();
+
             builder.Services.Configure<AppSetting>(builder.Configuration.GetSection("AppSettings"));
             var secretKey = builder.Configuration["AppSettings:SecretKey"];
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
