@@ -14,7 +14,7 @@ namespace Services.Interface
     {
         Task<List<AdoptionResponse>> GetAllAdoption(string? adoptionId);
         Task<string> AddAdoption(AdoptionRequest adoption);
-        Task<string> UpdateAdoption(AdoptionRequest adoption);
-
+        Task<string> UpdateAdoption(UpdateAdoptionRequest adoption, string id);
+        Task<string> DeleteAdoption(AdoptionRequest adoption);
     }
 }

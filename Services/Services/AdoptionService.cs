@@ -41,6 +41,11 @@ namespace Services.Services
             }
         }
 
+        public Task<string> DeleteAdoption(AdoptionRequest adoption)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<AdoptionResponse>> GetAllAdoption(string? adoptionId)
         {
             List<AdoptionResponse> result = new List<AdoptionResponse>();
@@ -60,9 +65,25 @@ namespace Services.Services
             return result;
         }
 
-        public Task<string> UpdateAdoption(AdoptionRequest adoption)
+        public async Task<string> UpdateAdoption(UpdateAdoptionRequest adoptionRequest, string id)
         {
-            throw new NotImplementedException();
+            var checkAdoption = await _adoptionRepository.GetAdoption(id);
+            if (checkAdoption.Count == 0)
+            {
+                return "Adoption is not existed";
+            }
+            Adoption adoption = checkAdoption.First();
+            adoption.AdoptionStatus = (AdoptionStatus)adoptionRequest.AdoptionStatus;
+            adoption.Reason = adoptionRequest.Reason;   
+            int result = await _adoptionRepository.UpdateAdoption(adoption);
+            if (result == 0)
+            {
+                return "Update adoption failed";
+            }
+            else
+            {
+                return "Update adoption success";
+            }
         }
     }
 }

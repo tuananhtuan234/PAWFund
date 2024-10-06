@@ -62,5 +62,19 @@ namespace PAWFund.Controllers
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpPut("adoption/id/{id}")]
+        public async Task<IActionResult> UpdateAdoption([FromBody] UpdateAdoptionRequest adoptionRequest, [FromRoute][Required] string id)
+        {
+            try
+            {
+                var result = await _adoptionService.UpdateAdoption(adoptionRequest, id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
