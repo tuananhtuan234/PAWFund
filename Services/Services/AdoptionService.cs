@@ -41,9 +41,29 @@ namespace Services.Services
             }
         }
 
-        public Task<string> DeleteAdoption(AdoptionRequest adoption)
+        public async Task<string> DeleteAdoption(string adoptionId)
         {
-            throw new NotImplementedException();
+            var checkAdoption = await _adoptionRepository.GetAdoption(adoptionId);
+            if (checkAdoption.Count == 0)
+            {
+                return "Adoption is not existed";
+            }
+            if (checkAdoption.Count == 1)
+            {
+                if (checkAdoption.First().AdoptionStatus == AdoptionStatus.Approved)
+                {
+                    return "Cannot be deleted because adoption has been accepted";
+                }
+            }
+            int result = await _adoptionRepository.DeleteAdoption(checkAdoption.First());
+            if (result == 0)
+            {
+                return "Delete adoption failed";
+            }
+            else
+            {
+                return "Delete adoption success";
+            }
         }
 
         public async Task<List<AdoptionResponse>> GetAllAdoption(string? adoptionId)
