@@ -11,5 +11,6 @@ namespace Repository.Data.Enum
         Pending = 0, // chưa giải quyết
         Approved = 1, // Chấp nhận
         Rejected = 2, // Từ chối
+        Cancel = 3, // Hủy
     }
 }

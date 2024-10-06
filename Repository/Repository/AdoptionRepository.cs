@@ -24,6 +24,12 @@ namespace Repository.Repository
             return await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<int> DeleteAdoption(Adoption adoption)
+        {
+            _dbContext.Adoptions.Remove(adoption);
+            return await _dbContext.SaveChangesAsync();
+        }
+
         public Task<List<Adoption>> GetAdoption(string? adoptinId)
         {
             IQueryable<Adoption> query = _dbContext.Adoptions;
