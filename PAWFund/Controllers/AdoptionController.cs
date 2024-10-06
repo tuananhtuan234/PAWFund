@@ -76,5 +76,19 @@ namespace PAWFund.Controllers
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpDelete("adoption/id/{id}")]
+        public async Task<IActionResult> DeleteAdoption([FromRoute][Required] string id)
+        {
+            try
+            {
+                var result = await _adoptionService.DeleteAdoption(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
