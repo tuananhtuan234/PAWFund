@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interface;
+using Services.Models.Request;
 using System.ComponentModel.DataAnnotations;
 
 namespace PAWFund.Controllers
@@ -40,6 +41,20 @@ namespace PAWFund.Controllers
                 {
                     return BadRequest("Not found");
                 }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPost("adoption")]
+        public async Task<IActionResult> AddAdoption([FromBody][Required] AdoptionRequest adoptionRequest)
+        {
+            try
+            {
+                var result = await _adoptionService.AddAdoption(adoptionRequest);
                 return Ok(result);
             }
             catch (Exception ex)

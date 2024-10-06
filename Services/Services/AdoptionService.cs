@@ -1,6 +1,8 @@
-﻿using Repository.Data.Enum;
+﻿using Repository.Data.Entity;
+using Repository.Data.Enum;
 using Repository.Interface;
 using Services.Interface;
+using Services.Models.Request;
 using Services.Models.Response;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,27 @@ namespace Services.Services
         public AdoptionService(IAdoptionRepository adoptionRepository) 
         {
             _adoptionRepository = adoptionRepository;
+        }
+
+        public async Task<string> AddAdoption(AdoptionRequest adoptionRequest)
+        {
+            Adoption adoption = new Adoption()
+            {
+                AdoptionDate = DateTime.Now,
+                AdoptionId = Guid.NewGuid().ToString(),
+                AdoptionStatus = AdoptionStatus.Pending,
+                UserId = adoptionRequest.UserId, 
+                Reason = null,
+            };
+            int result = await _adoptionRepository.AddAdoption(adoption);
+            if (result == 0)
+            {
+                return "Add adoption failed";
+            }
+            else
+            {
+                return "Add adoption success";
+            }
         }
 
         public async Task<List<AdoptionResponse>> GetAllAdoption(string? adoptionId)
@@ -35,6 +58,11 @@ namespace Services.Services
                 result.Add(adoptionResponse);
             }
             return result;
+        }
+
+        public Task<string> UpdateAdoption(AdoptionRequest adoption)
+        {
+            throw new NotImplementedException();
         }
     }
 }

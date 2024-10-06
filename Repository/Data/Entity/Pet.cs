@@ -14,11 +14,9 @@ namespace Repository.Data.Entity
     {
         [Key]
         public string PetId { get; set; } = Guid.NewGuid().ToString();
-
         [ForeignKey("ShelterId")]
         public string ShelterId { get; set; }
         public Shelter Shelter { get; set; }
-
         [Required]
         public string Name { get; set; }
         public bool Gender { get; set; }
