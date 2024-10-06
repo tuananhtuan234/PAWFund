@@ -18,11 +18,9 @@ namespace Repository.Data.Entity
         [ForeignKey("UserId")]
         public string UserId { get; set; }
         public User User { get; set; }
-        [ForeignKey("PetId")]
-        public string PetId { get; set; }
-        public ICollection<Pet> Pets { get; set; } = new List<Pet>();    
         public DateTime AdoptionDate { get; set; } = DateTime.Now;
         public AdoptionStatus AdoptionStatus { get; set; }
         public string? Reason { get; set; }
+        public ICollection<Pet> Pets { get; set; } = new List<Pet>();
     }
 }

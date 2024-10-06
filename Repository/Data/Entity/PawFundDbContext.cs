@@ -58,10 +58,10 @@ namespace Repository.Data.Entity
             .OnDelete(DeleteBehavior.NoAction);
 
 
-            modelBuilder.Entity<Adoption>()
-            .HasMany(a => a.Pets)
-            .WithOne(s => s.Adoption)
-            .HasForeignKey(a => a.PetId)
+            modelBuilder.Entity<Pet>()
+            .HasOne(a => a.Adoption)
+            .WithMany(s => s.Pets)
+            .HasForeignKey(a => a.AdoptionId)
             .OnDelete(DeleteBehavior.NoAction);
 
 
