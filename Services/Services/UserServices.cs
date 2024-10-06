@@ -27,7 +27,7 @@ namespace Services.Services
 
         public async Task<ServiceResponse<User>> DeleteUser(string userId)
         {
-            var user = await _repository.GetUser(userId, null, null);
+            var user = await _repository.GetUser(userId, null, null, null);
             if (!user.Any())
             {
                 return ServiceResponse<User>.ErrorResponse("User is not exist");
@@ -49,7 +49,7 @@ namespace Services.Services
 
         public async Task<ServiceResponse<UserResponse>> GetUser(string searchterm)
         {
-            var users = await _repository.GetUser(searchterm, null, null);
+            var users = await _repository.GetUser(searchterm, null, null, null);
             if (!users.Any())
             {
                 return ServiceResponse<UserResponse>.ErrorResponse("User is not exist");
@@ -89,7 +89,7 @@ namespace Services.Services
 
         public async Task<ServiceResponse<User>> UpdateUser(string userId, UserRequest userRequest, string? code)
         {
-            var checkUser = await _repository.GetUser(userId, null, null);
+            var checkUser = await _repository.GetUser(userId, null, null, null);
             if (!checkUser.Any())
             {
                 return ServiceResponse<User>.ErrorResponse("User is not exist");
@@ -100,7 +100,7 @@ namespace Services.Services
                 User user = checkUser.First();
                 if (string.IsNullOrEmpty(code))
                 {
-                    var checkEmai = await _repository.GetUser(userRequest.Email, null, null);
+                    var checkEmai = await _repository.GetUser(userRequest.Email, null, null, null);
                     if (checkEmai.Count() == 0)
                     {
                         string codeRandom = GenerateCode();
@@ -122,7 +122,7 @@ namespace Services.Services
                 }
                 else 
                 {
-                    var checkCode = await _repository.GetUser(code, null, null);
+                    var checkCode = await _repository.GetUser(user.Email , null, null, code);
                     if (checkCode.Count() == 0)
                     {
                         return ServiceResponse<User>.ErrorResponse("Code wrong");
@@ -153,6 +153,32 @@ namespace Services.Services
 
             }
             return null;
+        }
+
+        public async Task<ServiceResponse<List<UserResponse>>> GetAllUser()
+        {
+            List<UserResponse> listUser = new List<UserResponse>();
+            var users = await _repository.GetUser(null, null, null, null);
+            foreach (var user in users) 
+            {
+                var userResponse = new UserResponse()
+                {
+                    UserId = user.UserId,
+                    UpdatedDate = user.UpdatedDate?.ToString("dd/MM/yyyy"),
+                    Code = user.Code,
+                    CreatedDate = user.CreatedDate.ToString("dd/MM/yyyy"),
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    IsDeleted = user.IsDeleted,
+                    Password = user.Password,
+                    PhoneNumber = user.PhoneNumber,
+                    Role = user.Role.ToString(),
+                    Status = user.Status,
+                    Address = user.Address,
+                };
+                listUser.Add(userResponse);
+            }
+            return ServiceResponse<List<UserResponse>>.SuccessResponseWithMessage(listUser);
         }
     }
 }
