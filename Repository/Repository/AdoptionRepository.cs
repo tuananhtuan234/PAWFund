@@ -17,6 +17,13 @@ namespace Repository.Repository
         {
             _dbContext = dbContext;
         }
+
+        public async Task<int> AddAdoption(Adoption adoption)
+        {
+            await _dbContext.Adoptions.AddAsync(adoption);
+            return await _dbContext.SaveChangesAsync();
+        }
+
         public Task<List<Adoption>> GetAdoption(string? adoptinId)
         {
             IQueryable<Adoption> query = _dbContext.Adoptions;
@@ -26,6 +33,12 @@ namespace Repository.Repository
             }
             return query.ToListAsync();
 
+        }
+
+        public async Task<int> UpdateAdoption(Adoption adoption)
+        {
+            _dbContext.Adoptions.Update(adoption);
+            return await _dbContext.SaveChangesAsync();
         }
     }
 }

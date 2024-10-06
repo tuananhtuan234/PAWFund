@@ -37,6 +37,7 @@ namespace Services.Services
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
                 Status = petRequest.Status,
+                AdoptionId = null,
             };
             var result = await _repository.AddPet(pet);
             return result ? "Add Successfully" : "Add Failed";
