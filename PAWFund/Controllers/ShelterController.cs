@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Services.Interface;
 using Services.Models.Request;
 using Services.Models.Response;
+using Services.Services;
 
 namespace PAWFund.Controllers
 {
@@ -28,8 +29,8 @@ namespace PAWFund.Controllers
         }
 
         [HttpGet]
-        
-        public async Task<IActionResult> GetShelters([FromQuery]string? shelterId)
+
+        public async Task<IActionResult> GetShelters([FromQuery] string? shelterId)
         {
             var shelter = await shelterService.GetShelters(shelterId);
             return Ok(shelter);
@@ -48,6 +49,20 @@ namespace PAWFund.Controllers
         {
             var result = await shelterService.UpdateShelter(shelter);
             return Ok(result);
+        }
+
+        [HttpGet("pets/shelterid/{shelterid}")]
+        public async Task<IActionResult> GetPetByShelterStatus([FromRoute] string shelterid, [FromQuery] string? adoptionId, [FromQuery] string? response, [FromQuery] string? reason, [FromQuery] string? emailUser, [FromQuery] string? fullName)
+        {
+            try
+            {
+                var result = await shelterService.GetAllPetByShelterStatus(shelterid, adoptionId, response, reason, emailUser, fullName);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

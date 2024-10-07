@@ -41,6 +41,11 @@ namespace Repository.Repository
 
         }
 
+        public Task<Adoption> GetAdoptionIncludeUser(string adoptinId)
+        {
+            return _dbContext.Adoptions.Include(a => a.User).FirstOrDefaultAsync(a => a.AdoptionId.Equals(adoptinId));
+        }
+
         public async Task<int> UpdateAdoption(Adoption adoption)
         {
             _dbContext.Adoptions.Update(adoption);

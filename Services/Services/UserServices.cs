@@ -111,7 +111,7 @@ namespace Services.Services
                         result = await _repository.UpdateUser(user);
                         if (result)
                         {
-                            await _emailService.SendEmailAsync(userRequest.Email, "Confirm your account", $"Here is your code: {codeRandom}. Please enter this code to authenticate your account.");
+                            await _emailService.SendEmailAsync(userRequest.Email, "Confirm your account", $"Here is your code: {codeRandom}. Please enter this code to authenticate your account.", true);
                             return ServiceResponse<User>.SuccessResponseOnlyMessage("The system has sent the code via email. Please enter the code");
                         }
                         else
