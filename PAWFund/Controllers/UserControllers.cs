@@ -17,7 +17,7 @@ using System.Text;
 
 namespace PAWFund.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/")]
     [ApiController]
     public class UserControllers : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace PAWFund.Controllers
             _services = services;
         }
 
-        [HttpGet("GetAllUser")]
+        [HttpGet("users")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUser()
         {
@@ -42,7 +42,7 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpGet("GetUser")]
+        [HttpGet("user")]
         public async Task<IActionResult> GetUser([FromQuery]string searchTerm)
         {
             try
@@ -56,8 +56,8 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpDelete("DeleteUser")]
-        public async Task<IActionResult> DeleteUser([FromQuery][Required] string userId)
+        [HttpDelete("user/id/{userId}")]
+        public async Task<IActionResult> DeleteUser([FromRoute]string userId)
         {
             try
             {
@@ -70,8 +70,8 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUser([FromQuery][Required] string userId, [FromBody] UserRequest userRequest, [FromQuery] string? code)
+        [HttpPut("user/id/{userId}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] string userId, [FromBody] UserRequest userRequest, [FromQuery] string? code)
         {
             try
             {

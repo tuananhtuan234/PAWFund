@@ -59,6 +59,6 @@ namespace Repository.Repository
         {
             _context.Remove(user);
             await _context.SaveChangesAsync();
-        }
+        }    
     }
 }

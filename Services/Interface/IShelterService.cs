@@ -16,5 +16,6 @@ namespace Services.Interface
         Task<ServiceResponse<string>> UpdateShelter(UpdateShelterRequest shelterRequest);
         Task<ServiceResponse<string>> DeleteShelter(string shelterId);
         Task<ServiceResponse<List<ShelterResponse>>> GetShelters(string? shelterId);
+        Task<string> GetAllPetByShelterStatus(string shelterId, string? adoptionId, string? response, string? reason, string? emailUser, string? fullName);
     }
 }

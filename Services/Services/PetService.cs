@@ -1,7 +1,10 @@
 ﻿using Repository.Data.Entity;
+using Repository.Data.Enum;
 using Repository.Interface;
+using Services.Helper;
 using Services.Interface;
 using Services.Models.Request;
+using Services.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +16,17 @@ namespace Services.Services
     public class PetService : IPetService
     {
         private readonly IPetRepository _repository;
-        public PetService(IPetRepository repository)
+        private readonly IAdoptionRepository _adoptionRepository;
+        private readonly IUserRepository _userRepository;   
+        private readonly IEmailService _emailService;
+        private readonly IShelterRepository _shelterRepository;
+        public PetService(IPetRepository repository, IAdoptionRepository adoptionRepository, IUserRepository userRepository, IEmailService emailService, IShelterRepository shelterRepository)
         {
             _repository = repository;
+            _adoptionRepository = adoptionRepository;   
+            _userRepository = userRepository;
+            _emailService = emailService;
+            _shelterRepository = shelterRepository;
         }
 
         public async Task<string> AddPet(PetRequest petRequest)
@@ -38,6 +49,8 @@ namespace Services.Services
                 UpdateDate = null,
                 Status = petRequest.Status,
                 AdoptionId = null,
+                ShelterStatus = null,
+                Reason = null,
             };
             var result = await _repository.AddPet(pet);
             return result ? "Add Successfully" : "Add Failed";
@@ -56,6 +69,7 @@ namespace Services.Services
         {
             return _repository.GetAllPet(searchterm);
         }
+
 
         public Task<Pet> GetPetById(string id)
         {

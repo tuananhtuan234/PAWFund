@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Services.Models.Request
 {
-    public class AdoptionRequest
+    public class PetsRequest
     {
-        public string UserId { get; set; }
-        public List<PetsRequest> ListPet { get; set; }
+        public string PetId { get; set; }   
+        public string ShelterId { get; set; }
     }
 }

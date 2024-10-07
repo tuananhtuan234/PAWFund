@@ -10,7 +10,6 @@ namespace PAWFund.Controllers
     public class AdoptionController : ControllerBase
     {
         private readonly IAdoptionService _adoptionService;
-
         public AdoptionController(IAdoptionService adoptionService)
         {
             _adoptionService = adoptionService;
@@ -87,6 +86,57 @@ namespace PAWFund.Controllers
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPatch("adoption/id/{adoptionid}")]
+        public async Task<IActionResult> UpdateStatusAdoption([FromRoute] string adoptionid)
+        {
+            int count = 0;
+            string result = null;
+            result = await _adoptionService.UpdateStatusAdoption(adoptionid, count);
+            if (result == "Shelter need to accept adoption" || result == "Shelter rejected can not update status")
+            {
+                count = -1;
+            }
+            if (result == "Adoption accepted")
+            {
+                count = 3;
+            }
+            if (result == "Prepare for delivery")
+            {
+                count = 4;
+            }
+            if (result == "Delivered to the driver")
+            {
+                count = 5;
+            }
+            if (result == "Adoption completed")
+            {
+                count = 0;
+            }
+            result = await _adoptionService.UpdateStatusAdoption(adoptionid, count);
+            if (count == -1) 
+            {
+                return BadRequest(result);
+            }
+            else
+            {
+                return Ok(result);
+            }
+        }
+
+        [HttpGet("adoption/id/{adoptionid}")]
+        public async Task<IActionResult> FollowAdoption([FromRoute] string adoptionid,[FromQuery] string? response, [FromQuery] string? reason)
+        {
+            try
+            {
+                var adoptionStatus = await _adoptionService.FollowAdoption(adoptionid, response, reason);
+                return Ok(adoptionStatus);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -10,7 +10,7 @@ namespace Services.Helper
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(string email, string subject, string message);
+        Task SendEmailAsync(string email, string subject, string message, bool isHtml);
     }
     public class EmailService : IEmailService
     {
@@ -25,11 +25,13 @@ namespace Services.Helper
                 EnableSsl = true,
             };
         }
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public async Task SendEmailAsync(string email, string subject, string message, bool isHtml = false)
         {
             try
             {
                 var mailMessage = new MailMessage("nhathoang1470@gmail.com", email, subject, message);
+                mailMessage.IsBodyHtml = isHtml; // Set this to true if you want to send an HTML email
+
                 await _smtpClient.SendMailAsync(mailMessage);
             }
             catch (SmtpException smtpEx)
@@ -43,5 +45,6 @@ namespace Services.Helper
                 throw new Exception($"An error occurred: {ex.Message}");
             }
         }
+
     }
 }
