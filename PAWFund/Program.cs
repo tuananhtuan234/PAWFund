@@ -1,8 +1,10 @@
-
+﻿
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using Repository;
 using Repository.Data.Entity;
@@ -11,6 +13,8 @@ using Repository.Models;
 using Repository.Repository;
 using Services.Helper;
 using Services.Interface;
+using Services.Models.Response;
+using Services.Profiles;
 using Services.Services;
 using System.Text;
 
@@ -21,10 +25,30 @@ namespace PAWFund
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            
             // Add services to the container.
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+             // Định nghĩa OData Model
+            var modelBuilder = new ODataConventionModelBuilder();
+            modelBuilder.EntitySet<EventResponse>("Events");
+
+            // Cấu hình OData
+            builder.Services.AddControllers().AddOData(options =>
+            {
+                options.AddRouteComponents("odata", modelBuilder.GetEdmModel())
+                       .Select()
+                       .Filter()
+                       .OrderBy()
+                       .Expand()
+                       .Count()
+                       .SetMaxTop(null);
+            });
+
+            builder.Services.AddScoped<IEventService, EventService>();
+            builder.Services.AddScoped<IEventRepository, EventRepository>();
 
             builder.Services.AddScoped<IPetService, PetService>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();   
@@ -38,6 +62,7 @@ namespace PAWFund
 
             builder.Services.AddScoped<IShelterService, ShelterService>();
             builder.Services.AddScoped<IShelterRepository, ShelterRepository>();
+            builder.Services.AddAutoMapper(typeof(EventProfile));
 
             builder.Services.AddScoped<IEmailService, EmailService>();
 

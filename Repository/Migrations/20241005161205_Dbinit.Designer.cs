@@ -12,8 +12,8 @@ using Repository.Data.Entity;
 namespace Repository.Migrations
 {
     [DbContext(typeof(PawFundDbContext))]
-    [Migration("20240929092726_InitialMigration_1")]
-    partial class InitialMigration_1
+    [Migration("20241005161205_Dbinit")]
+    partial class Dbinit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,17 +36,18 @@ namespace Repository.Migrations
                     b.Property<int>("AdoptionStatus")
                         .HasColumnType("int");
 
-                    b.Property<string>("ShelterId")
+                    b.Property<string>("PetId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AdoptionId");
-
-                    b.HasIndex("ShelterId");
 
                     b.HasIndex("UserId");
 
@@ -86,6 +87,9 @@ namespace Repository.Migrations
                     b.Property<string>("EventId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("DateEnd")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("EventDate")
                         .HasColumnType("datetime2");
 
@@ -109,6 +113,26 @@ namespace Repository.Migrations
                     b.HasIndex("ShelterId");
 
                     b.ToTable("Event");
+                });
+
+            modelBuilder.Entity("Repository.Data.Entity.Image", b =>
+                {
+                    b.Property<string>("ImageId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PetId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UrlImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ImageId");
+
+                    b.HasIndex("PetId");
+
+                    b.ToTable("Image");
                 });
 
             modelBuilder.Entity("Repository.Data.Entity.Payment", b =>
@@ -155,10 +179,6 @@ namespace Repository.Migrations
                     b.Property<bool>("Gender")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Images")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -170,6 +190,9 @@ namespace Repository.Migrations
                     b.Property<string>("Species")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
@@ -228,6 +251,14 @@ namespace Repository.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -239,6 +270,9 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -249,6 +283,9 @@ namespace Repository.Migrations
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -285,19 +322,11 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.Data.Entity.Adoption", b =>
                 {
-                    b.HasOne("Repository.Data.Entity.Shelter", "Shelter")
-                        .WithMany("Adoptions")
-                        .HasForeignKey("ShelterId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Repository.Data.Entity.User", "User")
                         .WithMany("Adoptions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Shelter");
 
                     b.Navigation("User");
                 });
@@ -332,6 +361,17 @@ namespace Repository.Migrations
                     b.Navigation("Shelter");
                 });
 
+            modelBuilder.Entity("Repository.Data.Entity.Image", b =>
+                {
+                    b.HasOne("Repository.Data.Entity.Pet", "Pet")
+                        .WithMany("Images")
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Pet");
+                });
+
             modelBuilder.Entity("Repository.Data.Entity.Payment", b =>
                 {
                     b.HasOne("Repository.Data.Entity.Donation", "Donation")
@@ -345,11 +385,19 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.Data.Entity.Pet", b =>
                 {
+                    b.HasOne("Repository.Data.Entity.Adoption", "Adoption")
+                        .WithMany("Pets")
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Repository.Data.Entity.Shelter", "Shelter")
                         .WithMany("Pets")
                         .HasForeignKey("ShelterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Adoption");
 
                     b.Navigation("Shelter");
                 });
@@ -384,6 +432,11 @@ namespace Repository.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Repository.Data.Entity.Adoption", b =>
+                {
+                    b.Navigation("Pets");
+                });
+
             modelBuilder.Entity("Repository.Data.Entity.Donation", b =>
                 {
                     b.Navigation("Payment")
@@ -395,10 +448,13 @@ namespace Repository.Migrations
                     b.Navigation("UserEvents");
                 });
 
+            modelBuilder.Entity("Repository.Data.Entity.Pet", b =>
+                {
+                    b.Navigation("Images");
+                });
+
             modelBuilder.Entity("Repository.Data.Entity.Shelter", b =>
                 {
-                    b.Navigation("Adoptions");
-
                     b.Navigation("Donations");
 
                     b.Navigation("Events");

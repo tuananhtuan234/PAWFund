@@ -80,6 +80,9 @@ namespace Repository.Migrations
                     b.Property<string>("EventId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("DateEnd")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("EventDate")
                         .HasColumnType("datetime2");
 
