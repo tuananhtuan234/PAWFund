@@ -18,24 +18,65 @@ namespace Repository.Repository
             this._dbContext = dbContext;
         }
 
-        public Task<int> AddEvent(Event Event)
+        public async Task AddEvent(Event Event)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Event>> GetEvent(string? EventId)
-        {
-            IQueryable<Event> query = _dbContext.Events;
-            if (!string.IsNullOrEmpty(EventId))
+            try
             {
-                query = query.Where(s => s.EventId == EventId);
+                await this._dbContext.Events.AddAsync(Event);
             }
-            return query.ToListAsync();
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+
+            }
         }
 
-        public Task<int> UpdateEvent(Event Event)
+        public async Task DeleteEvent(Event Event)
         {
-            throw new NotImplementedException();
+            try
+            {
+                this._dbContext.Events.Remove(Event);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<List<Event>> GetEvent()
+        {
+            //IQueryable<Event> query = _dbContext.Events;
+            //if (!string.IsNullOrEmpty(EventId))
+            //{
+            //    query = query.Where(s => s.EventId == EventId);
+            //}
+            return await _dbContext.Events.ToListAsync();
+        }
+        public async Task<Event> GetEventById(string EventId)
+        {
+            //return _dbContext.Events.Where(s => s.EventId == EventId).SingleOrDefaultAsync();
+            try
+            {
+                return await _dbContext.Events
+                   .SingleOrDefaultAsync(p => p.EventId == EventId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task UpdateEvent(Event Event)
+        {
+            try
+            {
+                this._dbContext.Entry<Event>(Event).State = EntityState.Modified;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

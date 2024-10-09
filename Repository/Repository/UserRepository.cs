@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repository
 {
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly PawFundDbContext _context;
 
@@ -18,25 +18,26 @@ namespace Repository.Repository
             _context = context;
         }
 
-        public async Task<List<User>> GetAllUser(string searchterm)
+        public async Task<List<User>> GetUser(string searchterm, string email, string password)
         {
-            var query = _context.Users.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(searchterm))
+            try
             {
-                query = query.Where(sc => sc.FullName.Contains(searchterm) || sc.Email.Contains(searchterm));
+                IQueryable<User> query = _context.Users.Where(u => u.IsDeleted == false);
+                if (!string.IsNullOrWhiteSpace(searchterm))
+                {
+                    query = query.Where(u => u.FullName.Contains(searchterm) || u.UserId == searchterm || u.Code == searchterm || u.Email == searchterm);
+                }
+                if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrEmpty(password))
+                { 
+                    query = query.Where(u => u.Email == email && u.Password == password);
+                }
+
+                return await query.ToListAsync();
             }
-            var user = await query.ToListAsync();
-            return user;
-        }
-
-        public async Task<User> GetUserById(string UserId)
-        {
-            return await _context.Users.FirstOrDefaultAsync(sc => sc.UserId.Equals(UserId));
-        }
-
-        public async Task<User> Login(string email, string password)
-        {
-            return await _context.Users.FirstOrDefaultAsync(sc => sc.Email.Equals(email) && sc.Password.Equals(password));
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
         public async Task<bool> AddUser(User user)
         {
@@ -50,14 +51,10 @@ namespace Repository.Repository
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task DeleteUser(string UserId)
+        public async Task DeleteUser(User user)
         {
-            User user = await GetUserById(UserId);
-            if (user != null)
-            {
-                _context.Remove(user);
-                await _context.SaveChangesAsync();
-            }
+            _context.Remove(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

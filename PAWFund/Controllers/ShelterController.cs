@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Services.Interface;
@@ -19,6 +20,7 @@ namespace PAWFund.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddShelter([FromBody]ShelterRequest shelterRequest)
         {
             var shelter = await shelterService.AddShelter(shelterRequest);
@@ -26,6 +28,7 @@ namespace PAWFund.Controllers
         }
 
         [HttpGet]
+        
         public async Task<IActionResult> GetShelters([FromQuery]string? shelterId)
         {
             var shelter = await shelterService.GetShelters(shelterId);
@@ -33,6 +36,7 @@ namespace PAWFund.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteShelter([FromQuery]string shelterId)
         {
             var result = await shelterService.DeleteShelter(shelterId);

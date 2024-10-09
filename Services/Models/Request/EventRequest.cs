@@ -13,25 +13,11 @@ namespace Services.Models.Request
     public class EventRequest
     {
 
-        [Required]
-        public string EventId { get; set; }
 
-        [Required]
         public string ShelterId { get; set; }
-
-        [Required]
-        public Shelter Shelter { get; set; }
-
-        [Required]
         public string EventName { get; set; }
-
-        [Required]
         public string EventDescription { get; set; }
-
-        [Required]
         public DateTime EventDate { get; set; }
-
-        [Required]
-        public EventStatus EventStatus { get; set; }
+        public DateTime DateEnd { get; set; }
     }
 }

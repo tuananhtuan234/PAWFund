@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Client;
 using Repository.Data.Entity;
+using Repository.Data.Enum;
 using Repository.Interface;
 using Repository.Repository;
 using Services.Interface;
@@ -24,22 +26,55 @@ namespace Services.Services
             _mapper = mapper;
         }
 
-        public Task<ServiceResponse<EventResponse>> AddEvent(EventRequest eventRequest)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ServiceResponse<string>> DeleteEvent(string EventId)
-        {
-            throw new NotImplementedException();
-        }
-
-        
-        public async Task<ServiceResponse<List<EventResponse>>> GetEvents(string Id)
+        public async Task<ServiceResponse<EventResponse>> AddEvent(EventRequest eventRequest)
         {
             try
             {
-                List<Event> Event = await _unitOfWork.Events.GetEvent(Id);
+                Event _event=this._mapper.Map<Event>(eventRequest);
+                _event.EventId = Guid.NewGuid().ToString();
+                _event.EventStatus = EventStatus.NotStarted;
+                await _unitOfWork.Events.AddEvent(_event);
+                await this._unitOfWork.CommitAsync();
+                
+
+                var eventResponse = this._mapper.Map<EventResponse>(_event);
+
+                return ServiceResponse<EventResponse>.SuccessResponseWithMessage(eventResponse);
+                //return eventResponse;
+            
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+
+            }
+
+        }
+
+        public async Task DeleteEvent(string EventId)
+        {
+
+            Event _event;
+            if (EventId != null)
+            {
+                _event = await _unitOfWork.Events.GetEventById(EventId);
+
+            }
+            else
+            {
+                throw new Exception("product Id does not exist in the system.");
+            }
+            _unitOfWork.Events.DeleteEvent(_event);
+            await this._unitOfWork.CommitAsync();
+            
+        }
+
+        
+        public async Task<ServiceResponse<List<EventResponse>>> GetEvents()
+        {
+            try
+            {
+                List<Event> Event = await _unitOfWork.Events.GetEvent();
                 if (Event == null)
                 {
                     throw new Exception("AccountId does not exist in system");
@@ -58,9 +93,25 @@ namespace Services.Services
 
        
 
-        public Task<ServiceResponse<string>> UpdateEvent(EventRequest EventRequest)
+        public async Task<ServiceResponse<EventResponse>> UpdateEvent(string id, EventRequest EventRequest)
         {
-            throw new NotImplementedException();
+            Event _event;
+            if (id != null)
+            {
+                 _event = await _unitOfWork.Events.GetEventById(id);
+                
+            }
+            else
+            {
+                throw new Exception("product Id does not exist in the system.");
+            }
+            _event = _mapper.Map(EventRequest, _event);
+            _unitOfWork.Events.UpdateEvent(_event);
+            await this._unitOfWork.CommitAsync();
+
+            var eventResponses = _mapper.Map<EventResponse>(_event);
+            return ServiceResponse<EventResponse>.SuccessResponseWithMessage(eventResponses);
+
         }
     }
 }

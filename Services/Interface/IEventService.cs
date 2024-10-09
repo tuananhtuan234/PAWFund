@@ -6,14 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Services.Interface
 {
     public interface IEventService
     {
         Task<ServiceResponse<EventResponse>> AddEvent(EventRequest eventRequest);
-        Task<ServiceResponse<string>> UpdateEvent(EventRequest EventRequest);
-        Task<ServiceResponse<string>> DeleteEvent(string EventId);
-        Task<ServiceResponse<List<EventResponse>>> GetEvents(string? EventId);
+        Task<ServiceResponse<EventResponse>> UpdateEvent(string id,EventRequest EventRequest);
+        Task DeleteEvent(string EventId);
+        Task<ServiceResponse<List<EventResponse>>> GetEvents();
     }
 }
