@@ -18,5 +18,6 @@ namespace Services.Interface
         Task<ServiceResponse<User>> UpdateUser(string userId, UserRequest user, string? code);
         Task<ServiceResponse<User>> DeleteUser(string userId);
         Task<ServiceResponse<List<UserResponse>>> GetAllUser();
+        Task<User> GetUserById(string id);
     }
 }

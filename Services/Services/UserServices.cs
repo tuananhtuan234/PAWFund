@@ -180,5 +180,10 @@ namespace Services.Services
             }
             return ServiceResponse<List<UserResponse>>.SuccessResponseWithMessage(listUser);
         }
+
+        public async Task<User> GetUserById(string id)
+        {
+            return await _repository.GetUserById(id);
+        }
     }
 }
