@@ -13,5 +13,6 @@ namespace Repository.Interface
         Task<bool> AddUser(User user);
         Task<bool> UpdateUser(User user);
         Task DeleteUser(User user);
+        Task<User> GetUserById(string id);
     }
 }

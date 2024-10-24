@@ -43,6 +43,11 @@ namespace Repository.Repository
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<User> GetUserById(string id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(sc => sc.UserId.Equals(id));
+        }
         public async Task<bool> AddUser(User user)
         {
             _context.Users.Add(user);

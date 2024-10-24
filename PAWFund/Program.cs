@@ -69,6 +69,9 @@ namespace PAWFund
             builder.Services.AddScoped<IAdoptionRepository, AdoptionRepository>();
             builder.Services.AddScoped<IAdoptionService, AdoptionService>();
 
+            builder.Services.AddScoped<IImageServices, ImageServices>();
+            builder.Services.AddScoped<IImageRepository, ImageRepository>();
+
             builder.Services.Configure<AppSetting>(builder.Configuration.GetSection("AppSettings"));
             var secretKey = builder.Configuration["AppSettings:SecretKey"];
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
