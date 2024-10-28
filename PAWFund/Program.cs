@@ -72,6 +72,9 @@ namespace PAWFund
             builder.Services.AddScoped<IImageServices, ImageServices>();
             builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
+            builder.Services.AddScoped<IPaymentServices, PaymentServices>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+
             builder.Services.Configure<AppSetting>(builder.Configuration.GetSection("AppSettings"));
             var secretKey = builder.Configuration["AppSettings:SecretKey"];
             var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
