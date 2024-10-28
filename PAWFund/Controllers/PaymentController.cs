@@ -84,27 +84,23 @@ namespace PAWFund.Controllers
             }
 
             //Tạo và lưu trữ thông tin giao dịch
-            //var paymentDto = new PaymentDtos()
-            //{
-            //    PaymentId = Guid.NewGuid().ToString(),
-            //    Status =,
-            //    Amount = (float)amount / 100,  // Chia cho 100 nếu giá trị 'amount' là theo đơn vị nhỏ nhất của tiền tệ
-            //    Method = "VnPay",
-            //    DonationId = orderId
-            //};
-            //var result = await _paymentServices.AddPayment(paymentDto);
-            //var listOrderProduct = await _orderProductServices.GetListOrderProductByOrderId(orderId);
-            //foreach (var item in listOrderProduct)
-            //{
-            //    var product = await _cardServices.GetProductById(item.ProductId);
-            //    if (product != null)
-            //    {
-            //        product.Quantity -= item.Quantity;// Reduce the inventory quantity based on the order
-            //        await _cardServices.UpdateQuantityProduct(product.Id, product); // Update the product in the database
-            //    }
-            //}
+            var paymentDto = new PaymentDtos()
+            {
+                PaymentId = Guid.NewGuid().ToString(),
+                DonationId = orderId,
+                Status = Repository.Data.Enum.PaymentStatus.Completed,
+                /*Amount = (float)amount / 100, */ // Chia cho 100 nếu giá trị 'amount' là theo đơn vị nhỏ nhất của tiền tệ
+                Method = Repository.Data.Enum.Method.Banking,             
+            };
+            await _paymentServices.AddPayment(paymentDto);
 
-            //if (result == "AddSuccessful")
+            var donationUpdateRequest = new DonationUpdateRequest()
+            {
+                Amount = (float)amount / 100,
+            };
+            var result = await _donationServices.UpdateDonation(orderId, donationUpdateRequest);
+
+            if (result == "Update Successfully")
             {
                 return Redirect("http://localhost:5000/" /*+ userId*/); // thay đổi đường link
             }
