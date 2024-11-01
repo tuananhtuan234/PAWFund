@@ -87,5 +87,18 @@ namespace PAWFund.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("{shelterid}")]
+        public async Task<IActionResult> GetAllPetByShelter(string shelterid)
+        {
+			try
+            {
+				var pet = await _petService.GetAllPetByShelter(shelterid);
+				return Ok(pet);
+			}catch (Exception ex)
+            {
+				return BadRequest(ex.Message);
+			}
+		}
     }
 }

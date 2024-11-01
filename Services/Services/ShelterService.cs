@@ -304,5 +304,21 @@ namespace Services.Services
                 }
             }
         }
-    }
+
+		public async Task<ServiceResponse<List<ShelterResponse>>> GetAllShelters()
+		{
+			List<ShelterResponse> shelterResponses = shelterRepository.GetAllShelters().Result.Select(s => new ShelterResponse
+            {
+				ShelterId = s.ShelterId,
+				Address = s.Address,
+				Description = s.Description,
+				Email = s.Email,
+				PhoneNumber = s.PhoneNumber,
+				ShelterDate = s.ShelterDate.ToString("dd/MM/yyyy"),
+				ShelterName = s.ShelterName,
+				UserName = s.User.FullName,
+			}).ToList();
+            return ServiceResponse<List<ShelterResponse>>.SuccessResponseWithMessage(shelterResponses);
+		}
+	}
 }

@@ -12,5 +12,7 @@ namespace Repository.Interface
         Task<int> AddShelter(Shelter shelter);
         Task<int> UpdateShelter(Shelter shelter);
         Task<List<Shelter>> GetShelters(string? shelterId);
-    }
+        Task<List<Shelter>> GetAllShelters();
+
+	}
 }

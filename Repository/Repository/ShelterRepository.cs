@@ -38,5 +38,11 @@ namespace Repository.Repository
             _dbContext.Shelters.Update(shelter);
             return await _dbContext.SaveChangesAsync();
         }
-    }
+
+        public async Task<List<Shelter>> GetAllShelters()
+        {
+			IQueryable<Shelter> query = _dbContext.Shelters.Include(s => s.User).Where(s => !s.IsDeleted);
+			return await query.ToListAsync();
+		}
+	}
 }

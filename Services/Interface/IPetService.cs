@@ -17,5 +17,6 @@ namespace Services.Interface
         Task<string> AddPet(PetRequest petRequest);
         Task DeletePet(string id);
         Task<string> UpdatePet(string petId, PetUpdateRequest petUpdateRequest);
+        Task<List<Pet>> GetAllPetByShelter(string shelterId);
     }
 }

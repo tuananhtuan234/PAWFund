@@ -70,8 +70,12 @@ namespace Services.Services
             return _repository.GetAllPet(searchterm);
         }
 
+		public async Task<List<Pet>> GetAllPetByShelter(string shelterId)
+		{
+            return await _repository.GetAllPetByShelter(shelterId);
+		}
 
-        public Task<Pet> GetPetById(string id)
+		public Task<Pet> GetPetById(string id)
         {
             return _repository.GetPetById(id);
         }

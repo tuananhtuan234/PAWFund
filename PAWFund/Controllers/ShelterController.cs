@@ -64,5 +64,12 @@ namespace PAWFund.Controllers
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpGet("all-shelter")]
+        public async Task<IActionResult> GetAllShelters()
+        {
+			var result = await shelterService.GetAllShelters();
+			return Ok(result);
+		}
     }
 }
