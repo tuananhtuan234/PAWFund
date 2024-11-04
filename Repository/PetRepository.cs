@@ -57,10 +57,13 @@ namespace Repository
             return await _context.Pets.Where(p => p.ShelterId == shelterId && p.ShelterStatus == Data.Enum.ShelterStatus.Waiting).ToListAsync();
         }
 
-        public async Task<List<Pet>> GetPetByAdoptionId(string adoptionId)
+        public async Task<Pet> GetPetByAdoptionId(string adoptionId)
         {
-            return await _context.Pets.Include(p => p.Adoption).Where(p => p.AdoptionId ==  adoptionId).ToListAsync(); 
+            return await _context.Pets
+                .Include(p => p.Adoption)
+                .FirstOrDefaultAsync(p => p.Adoption.AdoptionId == adoptionId);
         }
+
 
         public async Task<Pet> GetPetById(string PetId)
         {

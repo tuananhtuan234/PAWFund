@@ -15,7 +15,7 @@ namespace Repository.Interface
         Task<bool> UpdatePet(Pet pet);
         Task DeletePet(string PetId);
         Task<List<Pet>> GetAllPetByShelterStatus(string shelterId);
-        Task<List<Pet>> GetPetByAdoptionId(string adoptionId);
+        Task<Pet> GetPetByAdoptionId(string adoptionId);
         Task<List<Pet>> GetAllPetByShelter(string shelterId);
     }
 }

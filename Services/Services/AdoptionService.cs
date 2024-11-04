@@ -159,50 +159,16 @@ namespace Services.Services
             {
                 return "Adoption is not exist";
             }
-            else
+            Adoption adoption = adoptions.First();
+            if(adoption.AdoptionStatus == AdoptionStatus.Rejected)
             {
-                Adoption adoption = adoptions.First();
-                if (string.IsNullOrEmpty(response))
-                {
-                    return adoption.AdoptionStatus.ToString();
-                }
-                else
-                {
-                    if (response.ToLower() == "confirm")
-                    {
-                        adoption.AdoptionStatus = AdoptionStatus.Confirm;
-                    }
-                    if(response.ToLower() == "cancel")
-                    {
-                        if(adoption.AdoptionStatus == AdoptionStatus.Pending)
-                        {
-                            if (string.IsNullOrEmpty(reason)) 
-                            {
-                                return "Please enter reason you want to cancel this adoption";
-                            }
-                            else
-                            {
-                                adoption.AdoptionStatus = AdoptionStatus.Cancel;
-                                adoption.Reason = reason;
-                            }
-                        }
-                        else if(adoption.AdoptionStatus == AdoptionStatus.Cancel)
-                        {
-                            return "This adoption canceled";
-                        }
-                        else
-                        {
-                            return "Can not cancel adoption because this adoption ongoing";
-                        }
-                    }
-                }
-                int rs = await _adoptionRepository.UpdateAdoption(adoption);
-                if(response.ToLower() == "confirm")
-                {
-                    return rs > 0 ? "Confirm success" : "Confirm failed";
-                }
-                return rs > 0 ? "Cancel success" : "Confirm failed";
+                return "Shelter rejected";
             }
+            if(adoption.AdoptionStatus == AdoptionStatus.Accepted)
+            {
+                return "Shelter accepted";
+            }
+            return null;
         }
 
         public async Task<List<AdoptionResponse>> GetAllAdoption(string? adoptionId)
@@ -243,87 +209,6 @@ namespace Services.Services
             {
                 return "Update adoption success";
             }
-        }
-
-        public async Task<string> UpdateStatusAdoption(string adoptionId, int count)
-        {
-            var adoptions = await _adoptionRepository.GetAdoption(adoptionId);
-            if (adoptions == null) 
-            {
-                return "Adoption is not exist";
-            }
-            else
-            {
-                Adoption adoption = adoptions.First();
-                if (adoption.AdoptionStatus == AdoptionStatus.Pending)
-                {
-                    return "Shelter need to accept adoption";
-                }
-                if (adoption.AdoptionStatus == AdoptionStatus.Rejected)
-                {
-                    return "Shelter rejected can not update status";
-                }
-                if (adoption.AdoptionStatus == AdoptionStatus.Accepted)
-                {
-                    if(count == 0)
-                    {
-                        return "Adoption accepted";
-                    }
-                    if (count == 3)
-                    {
-                        adoption.AdoptionStatus = AdoptionStatus.Preparing;
-                        int result = await _adoptionRepository.UpdateAdoption(adoption);
-                        if (result == 0)
-                        {
-                            return "Update status failed";
-                        }
-                    }
-                    return "Prepare for delivery";
-                }
-                if (adoption.AdoptionStatus == AdoptionStatus.Preparing)
-                {
-                    if (count == 4)
-                    {
-                        adoption.AdoptionStatus = AdoptionStatus.Delivered;
-                        int result = await _adoptionRepository.UpdateAdoption(adoption);
-                        if (result == 0)
-                        {
-                            return "Update status failed";
-                        }
-                        else
-                        {
-                            return "Delivered to the driver";
-                        }
-                    }
-                    return "Prepare for delivery";
-                }
-                if (adoption.AdoptionStatus == AdoptionStatus.Delivered)
-                {
-                    if (count == 5)
-                    {
-                        adoption.AdoptionStatus = AdoptionStatus.Finish;
-                        int result = await _adoptionRepository.UpdateAdoption(adoption);
-                        if (result == 0)
-                        {
-                            return "Update status failed";
-                        }
-                        else
-                        {
-                            return "Adoption completed";
-                        }
-                    }
-                    return "Delivered to the driver";
-                }
-                if (adoption.AdoptionStatus == AdoptionStatus.Finish)
-                {
-                    return "Adoption completed";
-                }
-                if(count == -1)
-                {
-                    return "Cannot update status";
-                }
-            }
-            return null;
         }
     }
 }
