@@ -229,12 +229,17 @@ namespace Services.Services
             else
             {
                 var listPet = await petRepository.GetPetByAdoptionId(adoptionId);
-                if (listPet.Count == 0)
+                int rs = 0;
+                if (listPet == null)
                 {
                     return "No pets are available for adoption";
                 }
                 else
                 {
+                    if(listPet.ShelterStatus == ShelterStatus.Approved)
+                    {
+                        return "Pet has been adopted";
+                    }
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("<table style='border-collapse: collapse; width: 100%;'>");
                     sb.AppendLine("<tr style='background-color: #f2f2f2;'>");
@@ -245,43 +250,40 @@ namespace Services.Services
                     sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Reason</th>");
                     sb.AppendLine("</tr>");
 
-                    foreach (Pet item in listPet)
+                    Pet pet = await petRepository.GetPetById(listPet.PetId);
+                    if (pet == null)
                     {
-                        Pet pet = await petRepository.GetPetById(item.PetId);
-                        if (pet == null)
+                        return "Pet is not exist";
+                    }
+                    else
+                    {
+                        if (response.ToLower() == "accept" && string.IsNullOrEmpty(reason))
                         {
-                            return "Pet is not exist";
+                            pet.ShelterStatus = ShelterStatus.Approved;
+                            listPet.Adoption.AdoptionStatus = AdoptionStatus.Accepted;
+                        }
+                        if (response.ToLower() == "reject" && !string.IsNullOrEmpty(reason))
+                        {
+                            pet.AdoptionId = null;
+                            pet.ShelterStatus = null;
+                            listPet.Adoption.AdoptionStatus = AdoptionStatus.Rejected;
+                        }
+                        rs = await adoptionRepository.UpdateAdoption(listPet.Adoption);
+                        bool result = await petRepository.UpdatePet(pet);
+                        if (!result)
+                        {
+                            return "Update pet failed";
                         }
                         else
                         {
-                            if (response.ToLower() == "accept" && string.IsNullOrEmpty(reason))
-                            {
-                                pet.ShelterStatus = ShelterStatus.Approved;
-                                listPet.First().Adoption.AdoptionStatus = AdoptionStatus.Accepted;
-                            }
-                            if (response.ToLower() == "reject" && !string.IsNullOrEmpty(reason))
-                            {
-                                pet.AdoptionId = null;
-                                pet.ShelterStatus = null;
-                                listPet.First().Adoption.AdoptionStatus = AdoptionStatus.Rejected;
-                            }
-
-                            bool result = await petRepository.UpdatePet(pet);
-                            if (!result)
-                            {
-                                return "Update pet failed";
-                            }
-                            else
-                            {
-                                var shelter = await shelterRepository.GetShelters(pet.ShelterId);
-                                sb.AppendLine("<tr>");
-                                sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{adoptionId}</td>");
-                                sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{pet.Name}</td>");
-                                sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{shelter.First().ShelterName}</td>");
-                                sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{response}</td>");
-                                sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{reason}</td>");
-                                sb.AppendLine("</tr>");
-                            }
+                            var shelter = await shelterRepository.GetShelters(pet.ShelterId);
+                            sb.AppendLine("<tr>");
+                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{adoptionId}</td>");
+                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{pet.Name}</td>");
+                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{shelter.First().ShelterName}</td>");
+                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{response}</td>");
+                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{reason}</td>");
+                            sb.AppendLine("</tr>");
                         }
                     }
                     sb.AppendLine("</table>");
@@ -298,7 +300,7 @@ namespace Services.Services
 
 
 
-                    int rs = await adoptionRepository.UpdateAdoption(listPet.First().Adoption);
+                    
 
                     return rs > 0 ? "Confirmed successfully" : "Confirmed failed";
                 }
