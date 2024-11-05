@@ -75,10 +75,7 @@ namespace Services.Services
             try
             {
                 List<Event> Event = await _unitOfWork.Events.GetEvent();
-                if (Event == null)
-                {
-                    throw new Exception("AccountId does not exist in system");
-                }
+                
                 var eventResponses = _mapper.Map<List<EventResponse>>(Event);
                 return ServiceResponse<List<EventResponse>>.SuccessResponseWithMessage(eventResponses);
 
