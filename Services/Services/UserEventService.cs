@@ -67,7 +67,7 @@ namespace Services.Services
             }
             else
             {
-                throw new Exception("product Id does not exist in the system.");
+                throw new Exception("UserEvent does not exist in the system.");
             }
             _unitOfWork.UserEvents.DeleteUserEvent(userEvent);
             await this._unitOfWork.CommitAsync();
@@ -81,10 +81,7 @@ namespace Services.Services
             try
             {
                 List<UserEvent> UserEvent = await _unitOfWork.UserEvents.GetUserEvent();
-                if (UserEvent == null)
-                {
-                    throw new Exception("AccountId does not exist in system");
-                }
+               
                 var userEventResponses = _mapper.Map<List<UserEventResponse>>(UserEvent);
                 return ServiceResponse<List<UserEventResponse>>.SuccessResponseWithMessage(userEventResponses);
 
