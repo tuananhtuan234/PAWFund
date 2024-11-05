@@ -15,6 +15,7 @@ namespace Repository.Repository
         private IEventRepository _event;
         private IUserRepository _user;
         private IShelterRepository _shelter;
+        private IUserEventRepository _userEvent;
 
         public UnitOfWork(PawFundDbContext dbContext)
         {
@@ -30,6 +31,17 @@ namespace Repository.Repository
                     _event = new EventRepository(_dbContext);
                 }
                 return _event;
+            }
+        } 
+        public IUserEventRepository UserEvents
+        {
+            get
+            {
+                if (_userEvent == null)
+                {
+                    _userEvent = new UserEventRepository(_dbContext);
+                }
+                return _userEvent;
             }
         }
 
