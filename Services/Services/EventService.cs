@@ -103,7 +103,7 @@ namespace Services.Services
             }
             else
             {
-                throw new Exception("product Id does not exist in the system.");
+                throw new Exception("Event Id does not exist in the system.");
             }
             _event = _mapper.Map(EventRequest, _event);
             _unitOfWork.Events.UpdateEvent(_event);
