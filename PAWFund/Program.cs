@@ -33,6 +33,7 @@ namespace PAWFund
 			// Define OData Model
 			var modelBuilder = new ODataConventionModelBuilder();
 			modelBuilder.EntitySet<EventResponse>("Events");
+			modelBuilder.EntitySet<EventResponse>("UserEvents");
 
 			// Configure OData
 			builder.Services.AddControllers().AddOData(options =>
@@ -48,6 +49,9 @@ namespace PAWFund
 
 			builder.Services.AddScoped<IEventService, EventService>();
 			builder.Services.AddScoped<IEventRepository, EventRepository>();
+			
+			builder.Services.AddScoped<IUserEventService, UserEventService>();
+			builder.Services.AddScoped<IUserEventRepository, UserEventRepository>();
 
 			builder.Services.AddScoped<IPetService, PetService>();
 			builder.Services.AddScoped<IPetRepository, PetRepository>();
