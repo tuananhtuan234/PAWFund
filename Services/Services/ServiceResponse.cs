@@ -9,6 +9,7 @@ namespace Services.Services
     public class ServiceResponse<T>
     {
         public T Data { get; set; }
+        public string Parameter { get; set; }
         public bool Success { get; set; }
         public string ErrorMessage { get; set; }
         public string SuccessMessage { get; set; }
@@ -31,6 +32,11 @@ namespace Services.Services
         public static ServiceResponse<T> ErrorResponse(string errorMessage)
         {
             return new ServiceResponse<T> { Success = false, ErrorMessage = errorMessage };
+        }
+
+        public static ServiceResponse<T> SuccessResponseWithData(string parameter, string successMessage = "Success")
+        {
+            return new ServiceResponse<T> { Parameter = parameter, Success = true, SuccessMessage = successMessage };
         }
     }
 }

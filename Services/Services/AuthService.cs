@@ -6,6 +6,7 @@ using Repository.Interface;
 using Services.Helper;
 using Services.Interface;
 using Services.Models.Request;
+using Services.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -29,7 +30,7 @@ namespace Services.Services
             _emailService = emailService;   
         }
 
-        public async Task<ServiceResponse<string>> Login(string email, string password)
+        public async Task<ServiceResponse<AuthResponse>> Login(string email, string password)
         {
             try
             {
@@ -37,13 +38,13 @@ namespace Services.Services
                 User user = users.First();
                 if (user == null)
                 {
-                    return ServiceResponse<string>.ErrorResponse("Email or password is wrong");
+                    return ServiceResponse<AuthResponse>.ErrorResponse("Email or password is wrong");
                 }
                 else
                 {
                     if (!user.Status)
                     {
-                        return ServiceResponse<string>.ErrorResponse("Email unverify");
+                        return ServiceResponse<AuthResponse>.ErrorResponse("Email unverify");
                     }
                     else
                     {
@@ -66,7 +67,7 @@ namespace Services.Services
                             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                         };
                         var jwtToken = jwtHandler.CreateToken(tokenDes);
-                        return ServiceResponse<string>.SuccessResponseOnlyMessage(jwtHandler.WriteToken(jwtToken));
+                        return ServiceResponse<AuthResponse>.SuccessResponseWithMessage(new AuthResponse() { UserId = user.UserId }, jwtHandler.WriteToken(jwtToken));
                     }
                 }
             }
