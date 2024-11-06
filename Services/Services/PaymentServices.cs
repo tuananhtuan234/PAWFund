@@ -79,7 +79,7 @@ namespace Services.Services
             vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
             vnpay.AddRequestData("vnp_ReturnUrl", _configuration["VnPay:PaymentBackUrl"]);
             //_logger.LogInformation($"Next mid night: {payBackUrl}.");
-            vnpay.AddRequestData("vnp_TxnRef", model.OrderId.ToString());
+            vnpay.AddRequestData("vnp_TxnRef", Guid.NewGuid().ToString());
             //vnpay.AddRequestData("vnp_BankCode","ACB");
 
             TimeZoneInfo timeZone = TimeZoneInfo.Utc;

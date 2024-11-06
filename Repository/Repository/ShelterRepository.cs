@@ -23,6 +23,11 @@ namespace Repository.Repository
             return await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<Shelter> GetShelterById(string shelterId)
+        {
+            return await _dbContext.Shelters.FirstOrDefaultAsync(sc => sc.ShelterId.Equals(shelterId)); 
+        }
+
         public Task<List<Shelter>> GetShelters(string? shelterId)
         {
             IQueryable<Shelter> query = _dbContext.Shelters.Include(s => s.User).Where(s => !s.IsDeleted);
