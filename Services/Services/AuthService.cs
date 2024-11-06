@@ -67,7 +67,7 @@ namespace Services.Services
                             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                         };
                         var jwtToken = jwtHandler.CreateToken(tokenDes);
-                        return ServiceResponse<AuthResponse>.SuccessResponseWithMessage(new AuthResponse() { UserId = user.UserId }, jwtHandler.WriteToken(jwtToken));
+                        return ServiceResponse<AuthResponse>.SuccessResponseWithMessage(new AuthResponse() { UserId = user.UserId, Role = user.Role.ToString() }, jwtHandler.WriteToken(jwtToken));
                     }
                 }
             }
