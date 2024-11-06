@@ -14,11 +14,13 @@ namespace PAWFund.Controllers
         private readonly IPaymentServices _paymentServices;
         private readonly IUserServices _userServices;
         private readonly IDonationServices _donationServices;
-        public PaymentController(IPaymentServices paymentServices, IUserServices userServices, IDonationServices donationServices)
+        private readonly IShelterService _shelterService;
+        public PaymentController(IPaymentServices paymentServices, IUserServices userServices, IDonationServices donationServices, IShelterService shelterService)
         {
             _paymentServices = paymentServices;
             _userServices = userServices;
             _donationServices = donationServices;
+            _shelterService = shelterService;
         }
 
         [HttpGet]
@@ -29,18 +31,18 @@ namespace PAWFund.Controllers
         }
 
         [HttpPost("payment/vnpay")]
-        public async Task<IActionResult> AddPayment(string donationId, string userId)
+        public async Task<IActionResult> AddPayment(string shelterId, string userId, float amount)
         {
             var user = await _userServices.GetUserById(userId);
-            var donation = await _donationServices.GetDonationById(donationId);
+            var shelter = await _shelterService.GetShelterById(shelterId);
             try
             {
                 var vnPayModel = new VnPaymentRequestModel()
                 {
-                    Amount = donation.Amount,
+                    Amount = amount,
                     CreatedDate = DateTime.Now,
                     Description = "thanh toán VnPay",
-                    OrderId = donation.DonationId,
+                    OrderId = shelter.ShelterId,
                     FullName = user.FullName,
                 };
                 if (vnPayModel.Amount < 0)
@@ -84,24 +86,27 @@ namespace PAWFund.Controllers
             }
 
             //Tạo và lưu trữ thông tin giao dịch
-            var paymentDto = new PaymentDtos()
-            {
-                PaymentId = Guid.NewGuid().ToString(),
-                DonationId = orderId,
-                Status = Repository.Data.Enum.PaymentStatus.Completed,
-                /*Amount = (float)amount / 100, */ // Chia cho 100 nếu giá trị 'amount' là theo đơn vị nhỏ nhất của tiền tệ
-                Method = Repository.Data.Enum.Method.Banking,             
-            };
-            await _paymentServices.AddPayment(paymentDto);
 
-            var donationUpdateRequest = new DonationUpdateRequest()
+            var donationRequest = new DonationRequest()
             {
-                Amount = (float)amount / 100,
+                DonationId = Guid.NewGuid().ToString(),
+                ShelterId = orderId,
+                UserId = userId,
+                Amount = (float)amount / 100,   /*Amount = (float)amount / 100, */ // Chia cho 100 nếu giá trị 'amount' là theo đơn vị nhỏ nhất của tiền tệ
+                DonationDate = DateTime.Now,
             };
-            var result = await _donationServices.UpdateDonation(orderId, donationUpdateRequest);
+            var result = await _donationServices.AddDonation(donationRequest);
 
-            if (result == "Update Successfully")
+            if (result == "Add Successfully")
             {
+                var paymentDto = new PaymentDtos()
+                {
+                    PaymentId = Guid.NewGuid().ToString(),
+                    DonationId = donationRequest.DonationId,
+                    Status = Repository.Data.Enum.PaymentStatus.Completed,
+                    Method = Repository.Data.Enum.Method.Banking,
+                };
+                await _paymentServices.AddPayment(paymentDto);
                 return Redirect("http://localhost:5000/" /*+ userId*/); // thay đổi đường link
             }
             return BadRequest("Invalid transaction data.");

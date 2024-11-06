@@ -322,5 +322,10 @@ namespace Services.Services
 			}).ToList();
             return ServiceResponse<List<ShelterResponse>>.SuccessResponseWithMessage(shelterResponses);
 		}
-	}
+
+        public async Task<Shelter> GetShelterById(string shelterId)
+        {
+            return await shelterRepository.GetShelterById(shelterId);
+        }
+    }
 }
