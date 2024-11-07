@@ -27,7 +27,7 @@ namespace Services.Services
             }
            Donation donation = new Donation()
            {
-               DonationId = Guid.NewGuid().ToString(),
+               DonationId = donationRequest.DonationId,
                ShelterId = donationRequest.ShelterId,
                UserId = donationRequest.UserId,
                Amount = donationRequest.Amount,

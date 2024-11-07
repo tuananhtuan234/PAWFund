@@ -322,62 +322,64 @@ namespace Services.Services
 			}).ToList();
             return ServiceResponse<List<ShelterResponse>>.SuccessResponseWithMessage(shelterResponses);
 		}
-
-		public async Task<ServiceResponse<PagingResult<ShelterResponse>>> GetSheltersPaging(int currentPage, int pageSize, string search)
-		{
-			// Get all shelters from the repository
-			var allShelters = await shelterRepository.GetAllShelters();
-
-			// Apply the search filter if provided (case-insensitive search for ShelterName)
-			if (!string.IsNullOrWhiteSpace(search))
+		public async Task<Shelter> GetShelterById(string shelterId)
+	    {
+	        return await shelterRepository.GetShelterById(shelterId);
+	    }
+			public async Task<ServiceResponse<PagingResult<ShelterResponse>>> GetSheltersPaging(int currentPage, int pageSize, string search)
 			{
-				allShelters = allShelters
-					.Where(s => s.ShelterName.Contains(search, StringComparison.OrdinalIgnoreCase))
-					.ToList();
-			}
+				// Get all shelters from the repository
+				var allShelters = await shelterRepository.GetAllShelters();
 
-			// Calculate the total number of pages
-			int totalShelters = allShelters.Count;
-			int totalPages = (int)Math.Ceiling((double)totalShelters / pageSize);
-
-			// Ensure the currentPage is within valid bounds
-			currentPage = Math.Max(1, Math.Min(currentPage, totalPages));
-
-			// Get the subset of shelters for the current page
-			var paginatedShelters = allShelters
-				.Skip((currentPage - 1) * pageSize)  // Skip the number of items for previous pages
-				.Take(pageSize)                      // Take the number of items for this page
-				.Select(s => new ShelterResponse
+				// Apply the search filter if provided (case-insensitive search for ShelterName)
+				if (!string.IsNullOrWhiteSpace(search))
 				{
-					ShelterId = s.ShelterId,
-					Address = s.Address,
-					Description = s.Description,
-					Email = s.Email,
-					PhoneNumber = s.PhoneNumber,
-					ShelterDate = s.ShelterDate.ToString("dd/MM/yyyy"),
-					ShelterName = s.ShelterName,
-					UserName = s.User.FullName,
-				})
-				.ToList();
+					allShelters = allShelters
+						.Where(s => s.ShelterName.Contains(search, StringComparison.OrdinalIgnoreCase))
+						.ToList();
+				}
 
-			// Prepare the paging result
-			var pagingResult = new PagingResult<ShelterResponse>(
-	            totalShelters,    // totalItems
-	            totalPages,       // totalPages
-	            currentPage,      // currentPage
-	            pageSize,         // pageSize
-	            search,           // search
-	            paginatedShelters // Items
-            );
+				// Calculate the total number of pages
+				int totalShelters = allShelters.Count;
+				int totalPages = (int)Math.Ceiling((double)totalShelters / pageSize);
 
-			// Return the result wrapped in a ServiceResponse
-			return new ServiceResponse<PagingResult<ShelterResponse>>
-			{
-				Data = pagingResult,
-				Success = true,
-				SuccessMessage = "Shelters retrieved successfully."
-			};
-		}
+				// Ensure the currentPage is within valid bounds
+				currentPage = Math.Max(1, Math.Min(currentPage, totalPages));
 
+				// Get the subset of shelters for the current page
+				var paginatedShelters = allShelters
+					.Skip((currentPage - 1) * pageSize)  // Skip the number of items for previous pages
+					.Take(pageSize)                      // Take the number of items for this page
+					.Select(s => new ShelterResponse
+					{
+						ShelterId = s.ShelterId,
+						Address = s.Address,
+						Description = s.Description,
+						Email = s.Email,
+						PhoneNumber = s.PhoneNumber,
+						ShelterDate = s.ShelterDate.ToString("dd/MM/yyyy"),
+						ShelterName = s.ShelterName,
+						UserName = s.User.FullName,
+					})
+					.ToList();
+
+				// Prepare the paging result
+				var pagingResult = new PagingResult<ShelterResponse>(
+		            totalShelters,    // totalItems
+		            totalPages,       // totalPages
+		            currentPage,      // currentPage
+		            pageSize,         // pageSize
+		            search,           // search
+		            paginatedShelters // Items
+	            );
+
+				// Return the result wrapped in a ServiceResponse
+				return new ServiceResponse<PagingResult<ShelterResponse>>
+				{
+					Data = pagingResult,
+					Success = true,
+					SuccessMessage = "Shelters retrieved successfully."
+				};
+			}
 	}
 }
