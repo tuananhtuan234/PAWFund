@@ -107,7 +107,7 @@ namespace PAWFund.Controllers
                     Method = Repository.Data.Enum.Method.Banking,
                 };
                 await _paymentServices.AddPayment(paymentDto);
-                return Redirect("http://localhost:5000/" /*+ userId*/); // thay đổi đường link
+                return Redirect("http://localhost:3000/donationsuccess" /*+ userId*/); // thay đổi đường link
             }
             return BadRequest("Invalid transaction data.");
         }
