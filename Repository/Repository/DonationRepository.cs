@@ -44,6 +44,11 @@ namespace Repository.Repository
            return await _context.Donations.FirstOrDefaultAsync(sc => sc.DonationId.Equals(donationId));
         }
 
+        public async Task<List<Donation>> GetListDonationbyUserId(string userId)
+        {
+            return await _context.Donations.Where(sc => sc.UserId.Equals(userId)).ToListAsync();
+        }
+
         public async Task<bool> UpdateDonation(Donation donation)
         {
             _context.Donations.Update(donation);

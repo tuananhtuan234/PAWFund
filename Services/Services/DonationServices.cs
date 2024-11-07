@@ -74,7 +74,11 @@ namespace Services.Services
                 throw new Exception(ex.Message);
             }
         }
-   
+
+        public async Task<List<Donation>> GetListDonationbyUserId(string userId)
+        {
+           return await _donationRepository.GetListDonationbyUserId(userId);
+        }
 
         public async Task<string> UpdateDonation(string donationId, DonationUpdateRequest donationUpdateRequest)
         {
