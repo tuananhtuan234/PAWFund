@@ -30,7 +30,7 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpGet("/userId")]
+        [HttpGet("userId")]
         public async Task<IActionResult> GetListDonationByUserId(string userId)
         {
             if (ModelState.IsValid)
