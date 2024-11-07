@@ -30,6 +30,17 @@ namespace PAWFund.Controllers
             }
         }
 
+        [HttpGet("/userId")]
+        public async Task<IActionResult> GetListDonationByUserId(string userId)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _donationServices.GetListDonationbyUserId(userId);
+                return Ok(result);
+            }
+            return BadRequest(ModelState);
+        }
+
         [HttpGet("id")]
         public async Task<IActionResult> GetDonationById(string donationId)
         {

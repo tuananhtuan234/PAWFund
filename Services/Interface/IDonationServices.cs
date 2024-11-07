@@ -12,6 +12,7 @@ namespace Services.Interface
     {
         Task<List<Donation>> GetAllDonation();
         Task<Donation> GetDonationById(string donationId);
+        Task<List<Donation>> GetListDonationbyUserId(string userId);
         Task<string> AddDonation(DonationRequest donationRequest);
         Task DeleteDonationById(string donationId);
         Task<string> UpdateDonation(string donationId, DonationUpdateRequest donationUpdateRequest);     
