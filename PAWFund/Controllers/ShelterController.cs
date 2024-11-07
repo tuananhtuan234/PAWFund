@@ -78,5 +78,19 @@ namespace PAWFund.Controllers
 			var result = await shelterService.GetSheltersPaging(currentPage, pageSize, search);
 			return Ok(result);
 		}
+
+        [HttpGet("get-pets/{userId}")]
+        public async Task<IActionResult> GetPetByUserId([FromRoute] string userId)
+        {
+            try
+            {
+                var result = await shelterService.GetPetsByUserId(userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

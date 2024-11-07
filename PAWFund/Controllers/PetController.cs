@@ -38,6 +38,10 @@ namespace PAWFund.Controllers
             try
             {
                 var pet = await _petService.GetPetById(PetId);
+                if (pet == null)
+                {
+                    return NotFound();
+                }
                 return Ok(pet);
             }catch (Exception ex)
             {

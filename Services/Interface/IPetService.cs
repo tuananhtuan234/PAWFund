@@ -13,7 +13,7 @@ namespace Services.Interface
     public interface IPetService
     {
         Task<List<Pet>> GetAllPet(string searchterm);
-        Task<Pet> GetPetById(string id);
+        Task<PetDetailResponse?> GetPetById(string id);
         Task<string> AddPet(PetRequest petRequest);
         Task DeletePet(string id);
         Task<string> UpdatePet(string petId, PetUpdateRequest petUpdateRequest);

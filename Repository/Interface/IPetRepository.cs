@@ -10,12 +10,13 @@ namespace Repository.Interface
     public interface IPetRepository
     {
         Task<List<Pet>> GetAllPet(string searchterm);
-        Task<Pet> GetPetById(string PetId);
+        Task<Pet?> GetPetById(string PetId);
         Task<bool> AddPet(Pet pet);
         Task<bool> UpdatePet(Pet pet);
         Task DeletePet(string PetId);
         Task<List<Pet>> GetAllPetByShelterStatus(string shelterId);
         Task<Pet> GetPetByAdoptionId(string adoptionId);
         Task<List<Pet>> GetAllPetByShelter(string shelterId);
+        Task<List<Pet>> GetPetsByUserId(string userId);
     }
 }

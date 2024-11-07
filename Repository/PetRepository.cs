@@ -65,9 +65,16 @@ namespace Repository
         }
 
 
-        public async Task<Pet> GetPetById(string PetId)
+        public async Task<Pet?> GetPetById(string PetId)
         {
-            return await _context.Pets.FirstOrDefaultAsync(sc => sc.PetId.Equals(PetId));
+            return await _context.Pets.Include(p => p.Shelter).FirstOrDefaultAsync(sc => sc.PetId.Equals(PetId));
+        }
+
+        public Task<List<Pet>> GetPetsByUserId(string userId)
+        {
+            var shelterId = _context.Shelters.FirstOrDefault(s => s.UserId == userId).ShelterId;
+            var pets = _context.Pets.Where(p => p.ShelterId == shelterId && p.Status == Data.Enum.PetStatus.Accept).ToListAsync();
+            return pets;
         }
 
         public async Task<bool> UpdatePet(Pet pet)

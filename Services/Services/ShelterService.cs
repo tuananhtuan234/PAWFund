@@ -381,5 +381,34 @@ namespace Services.Services
 					SuccessMessage = "Shelters retrieved successfully."
 				};
 			}
+        public async Task<List<PetResponse>> GetPetsByUserId(string userId)
+        {
+            try
+            {
+                var response = new List<PetResponse>();
+                var petResponse = new PetResponse();
+                var pets = await petRepository.GetPetsByUserId(userId);
+
+                foreach (var pet in pets)
+                {
+                    petResponse = new PetResponse()
+                    {
+                        PetId = pet.PetId,
+                        Name = pet.Name,
+                        Gender = pet.Gender,
+                        Ages = pet.Ages,
+                        Description = pet.Description,
+                        Species = pet.Species,
+                        Breed = pet.Breed
+                    };
+                    response.Add(petResponse);
+                }
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 	}
 }

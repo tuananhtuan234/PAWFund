@@ -75,9 +75,26 @@ namespace Services.Services
             return await _repository.GetAllPetByShelter(shelterId);
 		}
 
-		public Task<Pet> GetPetById(string id)
+		public async Task<PetDetailResponse> GetPetById(string id)
         {
-            return _repository.GetPetById(id);
+            var pet = await _repository.GetPetById(id);
+            if (pet == null)
+            {
+                return null;
+            }
+            var petResponse = new PetDetailResponse()
+            {
+                PetId = pet.PetId,
+                ShelterId = pet.ShelterId,
+                UserId = pet.Shelter.UserId,
+                AdoptionId = pet.AdoptionId,
+                Name = pet.Name,
+                Description = pet.Description,
+                Species = pet.Species,
+                Breed = pet.Breed,
+                Status = pet.Status.ToString(),
+            };
+            return petResponse;
         }
 
         public async Task<string> UpdatePet(string petId, PetUpdateRequest petUpdateRequest)
