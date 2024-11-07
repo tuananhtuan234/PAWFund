@@ -18,5 +18,6 @@ namespace Services.Interface
         Task<ServiceResponse<List<ShelterResponse>>> GetShelters(string? shelterId);
         Task<string> GetAllPetByShelterStatus(string shelterId, string? adoptionId, string? response, string? reason, string? emailUser, string? fullName);
         Task<ServiceResponse<List<ShelterResponse>>> GetAllShelters();
+        Task<ServiceResponse<PagingResult<ShelterResponse>>> GetSheltersPaging(int currentPage, int pageSize, string search);
     }
 }

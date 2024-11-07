@@ -71,5 +71,12 @@ namespace PAWFund.Controllers
 			var result = await shelterService.GetAllShelters();
 			return Ok(result);
 		}
+
+        [HttpGet("paging-shelter")]
+        public async Task<IActionResult> GetSheltersPaging([FromQuery] int currentPage, [FromQuery] int pageSize, [FromQuery] string? search)
+        {
+			var result = await shelterService.GetSheltersPaging(currentPage, pageSize, search);
+			return Ok(result);
+		}
     }
 }

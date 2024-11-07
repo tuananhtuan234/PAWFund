@@ -20,7 +20,14 @@ namespace Repository.Repository
         public async Task<int> AddShelter(Shelter shelter)
         {
             await _dbContext.Shelters.AddAsync(shelter);
-            return await _dbContext.SaveChangesAsync();
+			var user = await _dbContext.Users
+							   .FirstOrDefaultAsync(u => u.UserId == shelter.UserId);
+
+			if (user != null) 
+			{
+				user.Role = Data.Enum.RoleStatus.Shelter_Staff;
+			}
+			return await _dbContext.SaveChangesAsync();
         }
 
         public Task<List<Shelter>> GetShelters(string? shelterId)
