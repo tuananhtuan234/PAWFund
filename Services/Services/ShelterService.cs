@@ -72,6 +72,11 @@ namespace Services.Services
                 {
                     return ServiceResponse<string>.ErrorResponse("shelterId is not existed");
                 }
+                var pets = await petRepository.GetAllPetByShelter(shelterId);
+                if (pets.Count > 0)
+                {
+                    return ServiceResponse<string>.ErrorResponse("Shelter has pets, cannot delete");
+                }
                 checkShelter.First().IsDeleted = true;
                 int result = await shelterRepository.UpdateShelter(checkShelter.First());
                 if (result != 0)
