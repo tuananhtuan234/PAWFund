@@ -16,10 +16,11 @@ namespace Services.Interface
         Task<ServiceResponse<string>> UpdateShelter(UpdateShelterRequest shelterRequest);
         Task<ServiceResponse<string>> DeleteShelter(string shelterId);
         Task<ServiceResponse<List<ShelterResponse>>> GetShelters(string? shelterId);
-        Task<string> GetAllPetByShelterStatus(string shelterId, string? adoptionId, string? response, string? reason);
+        Task<List<UserAdoptionResponse>> GetAllPetByShelterStatus(string shelterId);
         Task<ServiceResponse<List<ShelterResponse>>> GetAllShelters();
 		Task<Shelter> GetShelterById(string shelterId);
         Task<ServiceResponse<PagingResult<ShelterResponse>>> GetSheltersPaging(int currentPage, int pageSize, string search);
         Task<List<PetResponse>> GetPetsByUserId(string userId);
+        Task<string> ResponseAdoption(string adoptionId, string shelterId, string response, string? reason);
     }
 }

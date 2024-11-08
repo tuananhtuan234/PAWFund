@@ -21,6 +21,7 @@ namespace Repository.Data.Entity
         public DateTime AdoptionDate { get; set; } = DateTime.Now;
         public AdoptionStatus AdoptionStatus { get; set; }
         public string? Reason { get; set; }
+        public string? PetId { get; set; }
         public ICollection<Pet> Pets { get; set; } = new List<Pet>();
     }
 }
