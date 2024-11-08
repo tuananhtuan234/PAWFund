@@ -1,4 +1,5 @@
-﻿using Repository.Data.Entity;
+﻿using AutoMapper;
+using Repository.Data.Entity;
 using Repository.Data.Enum;
 using Repository.Interface;
 using Services.Helper;
@@ -19,13 +20,17 @@ namespace Services.Services
         private readonly IPetRepository _petRepository;
         private readonly IShelterRepository _shelterRepository;
         private readonly IEmailService _emailService;
-        public AdoptionService(IAdoptionRepository adoptionRepository, IPetRepository petRepository, IShelterRepository shelterRepository, IEmailService emailService) 
+        private readonly IMapper _mapper;
+        public AdoptionService(IAdoptionRepository adoptionRepository, IPetRepository petRepository, IShelterRepository shelterRepository, IEmailService emailService, IMapper mapper) 
         {
             _adoptionRepository = adoptionRepository;
             _petRepository = petRepository;
             _shelterRepository = shelterRepository;
             _emailService = emailService;
+            _mapper = mapper;
         }
+
+
 
         public async Task<string> AddAdoption(AdoptionRequest adoptionRequest)
         {
@@ -38,7 +43,7 @@ namespace Services.Services
                 UserId = adoptionRequest.UserId,
                 Reason = null,
             };
-
+            int result = await _adoptionRepository.AddAdoption(adoption);
             var distinctShelterId = adoptionRequest.ListPet.Select(s => s.ShelterId).Distinct();
 
             foreach (var shelterDistince in distinctShelterId)
@@ -122,8 +127,7 @@ namespace Services.Services
                 petDetailsBuilder = new StringBuilder();
             }
 
-            int result = await _adoptionRepository.AddAdoption(adoption);
-            return result == 0 ? "Add adoption failed" : "Add adoption success. Please access this code " + adoption.AdoptionId + " to track your adoption process";
+            return result == 0 ? "Add adoption failed" : "Add adoption success";
         }
 
 
@@ -152,7 +156,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<string> FollowAdoption(string adoptionId, string? response, string? reason)
+        public async Task<string> FollowAdoption(string adoptionId)
         {
             var adoptions = await _adoptionRepository.GetAdoption(adoptionId);
             if (adoptions.Count == 0)
@@ -171,23 +175,36 @@ namespace Services.Services
             return null;
         }
 
-        public async Task<List<AdoptionResponse>> GetAllAdoption(string? adoptionId)
+        public async Task<List<AdoptionUserResponse>> GetAdoptionByUserId(string userId)
         {
-            List<AdoptionResponse> result = new List<AdoptionResponse>();
-            var adoptions = await _adoptionRepository.GetAdoption(adoptionId);
-            foreach (var adoption in adoptions) 
+            List<AdoptionUserResponse> result = new List<AdoptionUserResponse>();
+            var adoptions = await _adoptionRepository.GetAdoptionByUserId(userId);
+            var adoptionUserResponse = _mapper.Map<List<AdoptionUserResponse>>(adoptions);
+            foreach (var item in adoptions)
             {
-                AdoptionResponse adoptionResponse = new AdoptionResponse()
+                foreach (var pet in item.Pets)
                 {
-                    AdoptionId = adoption.AdoptionId,
-                    AdoptionDate = adoption.AdoptionDate.ToString("dd/MM/yyyy"),
-                    AdoptionStatus = adoption.AdoptionStatus.ToString(),
-                    Reason = adoption.Reason,
-                    UserId = adoption.UserId,
-                };
-                result.Add(adoptionResponse);
+                    var shelter = await _shelterRepository.GetShelterById(pet.ShelterId);
+                    foreach (var adoption in adoptionUserResponse)
+                    {
+                        adoption.AdoptionDate = item.AdoptionDate.ToString("dd/MM/yyyy");
+                        adoption.AdoptionStatus = item.AdoptionStatus.ToString();
+                        foreach (var shelterName in adoption.Pets)
+                        {
+                            shelterName.ShelterName = shelter.ShelterName;
+                            shelterName.ShelterStatus = pet.ShelterStatus.ToString();
+                            shelterName.Status = pet.Status.ToString();
+                            shelterName.CreateDate = pet.CreateDate.ToString("dd/MM/yyyy");
+                        }
+                    }
+                }
             }
-            return result;
+            return adoptionUserResponse;
+        }
+
+        public Task<List<AdoptionResponse>> GetAllAdoption(string? adoptionId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<string> UpdateAdoption(UpdateAdoptionRequest adoptionRequest, string id)

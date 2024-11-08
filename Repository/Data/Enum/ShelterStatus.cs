@@ -8,7 +8,7 @@ namespace Repository.Data.Enum
 {
     public enum ShelterStatus
     {
-        Waiting = 0, // Đang chờ
-        Approved = 1, // Chấp nhận
+        Waiting = 0, 
+        Approved = 1, 
     }
 }

@@ -29,12 +29,12 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpGet("adoption")]
-        public async Task<IActionResult> GetAdoptionByAdoptionId([FromQuery][Required] string adoptionId)
+        [HttpGet("adoptions/{userId}")]
+        public async Task<IActionResult> GetAdoptionByUserId([FromRoute][Required] string userId)
         {
             try
             {
-                var result = await _adoptionService.GetAllAdoption(adoptionId);
+                var result = await _adoptionService.GetAdoptionByUserId(userId);
                 if (result.Count == 0)
                 {
                     return BadRequest("Not found");
@@ -90,11 +90,11 @@ namespace PAWFund.Controllers
         }
 
         [HttpGet("adoption/id/{adoptionid}")]
-        public async Task<IActionResult> FollowAdoption([FromRoute] string adoptionid,[FromQuery] string? response, [FromQuery] string? reason)
+        public async Task<IActionResult> FollowAdoption([FromRoute] string adoptionid)
         {
             try
             {
-                var adoptionStatus = await _adoptionService.FollowAdoption(adoptionid, response, reason);
+                var adoptionStatus = await _adoptionService.FollowAdoption(adoptionid);
                 return Ok(adoptionStatus);
             }
             catch (Exception ex)
