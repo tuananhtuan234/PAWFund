@@ -1,5 +1,6 @@
 ﻿using Repository.Data.Entity;
 using Services.Models.Request;
+using Services.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Services.Interface
 {
     public interface IDonationServices
     {
-        Task<List<Donation>> GetAllDonation();
+        Task<List<DonationResponse>> GetAllDonation();
         Task<Donation> GetDonationById(string donationId);
         Task<List<Donation>> GetListDonationbyUserId(string userId);
         Task<string> AddDonation(DonationRequest donationRequest);
