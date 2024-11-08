@@ -180,9 +180,9 @@ namespace Services.Services
         }
 
 
-        public async Task<string> GetAllPetByShelterStatus(string shelterId, string? adoptionId, string? response, string? reason, string? emailUser, string? fullName)
+        public async Task<string> GetAllPetByShelterStatus(string shelterId, string? adoptionId, string? response, string? reason)
         {
-            if (string.IsNullOrEmpty(adoptionId) && string.IsNullOrEmpty(response) && string.IsNullOrEmpty(emailUser) && string.IsNullOrEmpty(fullName))
+            if (string.IsNullOrEmpty(adoptionId) && string.IsNullOrEmpty(response))
             {
                 List<UserAdoptionResponse> listUser = new List<UserAdoptionResponse>();
                 List<Pet> pets = await petRepository.GetAllPetByShelterStatus(shelterId);
@@ -287,21 +287,16 @@ namespace Services.Services
                         }
                     }
                     sb.AppendLine("</table>");
-
+                    var user = await adoptionRepository.GetUserByAdoptionId(adoptionId);
                     var emailBody = $@"
-                                    <p>Dear {fullName},</p>
+                                    <p>Dear {user.User.FullName},</p>
                                     <p>We are pleased to send you the response from the center regarding the pet you have adopted.:</p>
                                     {sb.ToString().Trim()}
                                     <p>Have a good day</p>
                                     <p>Best regards,<br/>PAWFund</p>
                                     ";
 
-                    await emailService.SendEmailAsync(emailUser, "Confirm your adoption", emailBody, isHtml: true);
-
-
-
-                    
-
+                    await emailService.SendEmailAsync(user.User.Email, "Confirm your adoption", emailBody, isHtml: true);
                     return rs > 0 ? "Confirmed successfully" : "Confirmed failed";
                 }
             }

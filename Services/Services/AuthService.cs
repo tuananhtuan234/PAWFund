@@ -112,7 +112,7 @@ namespace Services.Services
                     IsDeleted = false,
                     Status = false,
                     Password = userRequest.Password,
-                    Role = (RoleStatus)userRequest.Role,
+                    Role = RoleStatus.Volunteers,
                     UpdatedDate = null,
                     Address = userRequest.Address,
                 };

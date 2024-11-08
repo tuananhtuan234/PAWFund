@@ -21,4 +21,20 @@ namespace Services.Profiles
 
         }
     }
+
+    public class AdoptionProfile : Profile
+    {
+        public AdoptionProfile()
+        {
+            CreateMap<Adoption, AdoptionUserResponse>().ReverseMap();
+        }
+    }
+
+    public class PetProfile : Profile
+    {
+        public PetProfile()
+        {
+            CreateMap<Pet, PetAdoptionResponse>().ReverseMap();
+        }
+    }
 }

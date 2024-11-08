@@ -14,5 +14,7 @@ namespace Repository.Interface
         Task<int> UpdateAdoption(Adoption adoption);
         Task<int> DeleteAdoption(Adoption adoption);
         Task<Adoption> GetAdoptionIncludeUser(string adoptinId);
+        Task<List<Adoption>> GetAdoptionByUserId(string userId);
+        Task<Adoption> GetUserByAdoptionId(string adoptionId);
     }
 }

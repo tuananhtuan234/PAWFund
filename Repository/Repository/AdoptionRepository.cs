@@ -41,9 +41,23 @@ namespace Repository.Repository
 
         }
 
+        public Task<List<Adoption>> GetAdoptionByUserId(string userId)
+        {
+            return _dbContext.Adoptions
+                .Include(a => a.Pets)
+                .Where(a => a.UserId == userId)
+                .ToListAsync();
+        }
+
+
         public Task<Adoption> GetAdoptionIncludeUser(string adoptinId)
         {
             return _dbContext.Adoptions.Include(a => a.User).FirstOrDefaultAsync(a => a.AdoptionId.Equals(adoptinId));
+        }
+
+        public async Task<Adoption> GetUserByAdoptionId(string adoptionId)
+        {
+            return await _dbContext.Adoptions.Include(a => a.User).FirstOrDefaultAsync(a => a.AdoptionId == adoptionId);
         }
 
         public async Task<int> UpdateAdoption(Adoption adoption)

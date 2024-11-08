@@ -52,11 +52,11 @@ namespace PAWFund.Controllers
         }
 
         [HttpGet("pets/shelterid/{shelterid}")]
-        public async Task<IActionResult> GetPetByShelterStatus([FromRoute] string shelterid, [FromQuery] string? adoptionId, [FromQuery] string? response, [FromQuery] string? reason, [FromQuery] string? emailUser, [FromQuery] string? fullName)
+        public async Task<IActionResult> GetPetByShelterStatus([FromRoute] string shelterid, [FromQuery] string? adoptionId, [FromQuery] string? response, [FromQuery] string? reason)
         {
             try
             {
-                var result = await shelterService.GetAllPetByShelterStatus(shelterid, adoptionId, response, reason, emailUser, fullName);
+                var result = await shelterService.GetAllPetByShelterStatus(shelterid, adoptionId, response, reason);
                 return Ok(result);
             }
             catch (Exception ex)
