@@ -23,6 +23,11 @@ namespace Repository.Repository
             return await _context.Payments.ToListAsync();
         }
 
+        public async Task<Payment> GetPaymentByDonationId(string donationId)
+        {
+            return await _context.Payments.FirstOrDefaultAsync(sc => sc.DonationId.Equals(donationId));
+        }
+
         public async Task<Payment> GetPaymentById(string id)
         {
             return await _context.Payments.FirstOrDefaultAsync(sc => sc.PaymentId.Equals(id));

@@ -2,6 +2,7 @@
 using Repository.Interface;
 using Services.Interface;
 using Services.Models.Request;
+using Services.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,26 +14,32 @@ namespace Services.Services
     public class DonationServices : IDonationServices
     {
         private readonly IDonationRepository _donationRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IShelterRepository _shelterRepository;
+        private readonly IPaymentRepository _paymentRepository;
 
-        public DonationServices(IDonationRepository donationRepository)
+        public DonationServices(IDonationRepository donationRepository, IPaymentRepository paymentRepository, IUserRepository userRepository, IShelterRepository shelterRepository)
         {
             _donationRepository = donationRepository;
+            _userRepository = userRepository;
+            _shelterRepository = shelterRepository;
+            _paymentRepository = paymentRepository;
         }
 
         public async Task<string> AddDonation(DonationRequest donationRequest)
         {
-           if (donationRequest == null)
+            if (donationRequest == null)
             {
                 return "Data not null";
             }
-           Donation donation = new Donation()
-           {
-               DonationId = donationRequest.DonationId,
-               ShelterId = donationRequest.ShelterId,
-               UserId = donationRequest.UserId,
-               Amount = donationRequest.Amount,
-               DonationDate = DateTime.Now,
-           };
+            Donation donation = new Donation()
+            {
+                DonationId = donationRequest.DonationId,
+                ShelterId = donationRequest.ShelterId,
+                UserId = donationRequest.UserId,
+                Amount = donationRequest.Amount,
+                DonationDate = DateTime.Now,
+            };
             var result = await _donationRepository.AddDonation(donation);
             return result ? "Add Successfully" : "Add Failed";
         }
@@ -54,9 +61,28 @@ namespace Services.Services
             }
         }
 
-        public async Task<List<Donation>> GetAllDonation()
+        public async Task<List<DonationResponse>> GetAllDonation()
         {
-            return await _donationRepository.GetAllDonation();
+            List<DonationResponse> donationResponses = new List<DonationResponse>();
+            var listDonation = await _donationRepository.GetAllDonation();
+            foreach (var item in listDonation)
+            {
+                var donation = await _donationRepository.GetDonationById(item.DonationId);
+                var user = await _userRepository.GetUserById(item.UserId);
+                var shelter = await _shelterRepository.GetShelterById(item.ShelterId);
+                
+                var newDonation = new DonationResponse()
+                {
+                    DonationId = item.DonationId,                  
+                    Email = user.Email,
+                    FullName = user.FullName,                  
+                    ShelterName = shelter.ShelterName,                  
+                    Amount = item.Amount,
+                    DonationDate = item.DonationDate,
+                };
+                donationResponses.Add(newDonation);
+            }
+            return donationResponses;
         }
 
         public async Task<Donation> GetDonationById(string donationId)
@@ -77,7 +103,7 @@ namespace Services.Services
 
         public async Task<List<Donation>> GetListDonationbyUserId(string userId)
         {
-           return await _donationRepository.GetListDonationbyUserId(userId);
+            return await _donationRepository.GetListDonationbyUserId(userId);
         }
 
         public async Task<string> UpdateDonation(string donationId, DonationUpdateRequest donationUpdateRequest)

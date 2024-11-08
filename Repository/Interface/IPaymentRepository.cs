@@ -13,5 +13,6 @@ namespace Repository.Interface
         Task<Payment> GetPaymentById(string id);
         Task<bool> AddPayment(Payment payment);
         Task DeletePayment(string id);
+        Task<Payment> GetPaymentByDonationId(string donationId);
     }
 }
