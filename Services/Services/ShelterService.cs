@@ -1,4 +1,5 @@
-﻿using Repository.Data.Entity;
+﻿using Azure;
+using Repository.Data.Entity;
 using Repository.Data.Enum;
 using Repository.Interface;
 using Repository.Repository;
@@ -180,129 +181,111 @@ namespace Services.Services
         }
 
 
-        public async Task<string> GetAllPetByShelterStatus(string shelterId, string? adoptionId, string? response, string? reason)
+        public async Task<List<UserAdoptionResponse>> GetAllPetByShelterStatus(string shelterId)
         {
-            if (string.IsNullOrEmpty(adoptionId) && string.IsNullOrEmpty(response))
+            List<UserAdoptionResponse> listUser = new List<UserAdoptionResponse>();
+            List<Pet> pets = await petRepository.GetAllPetByShelterStatus(shelterId);
+            if (pets.Count > 0)
             {
-                List<UserAdoptionResponse> listUser = new List<UserAdoptionResponse>();
-                List<Pet> pets = await petRepository.GetAllPetByShelterStatus(shelterId);
-                if (pets.Count > 0)
+                foreach (Pet pet in pets)
                 {
-                    StringBuilder sb = new StringBuilder();
-                    foreach (Pet pet in pets)
+                    Adoption adoption = await adoptionRepository.GetAdoptionIncludeUser(pet.AdoptionId);
+                    var userAdoptionResponse = new UserAdoptionResponse()
                     {
-                        Adoption adoption = await adoptionRepository.GetAdoptionIncludeUser(pet.AdoptionId);
-                        var userAdoptionResponse = new UserAdoptionResponse()
-                        {
-                            AdoptionId = pet.AdoptionId,
-                            AdoptionDate = adoption.AdoptionDate.ToString("dd/MM/yyyy"),
-                            PetId = pet.AdoptionId,
-                            PetName = pet.Name,
-                            Fullname = adoption.User.FullName,
-                            Address = adoption.User.Address,
-                            EmailAddress = adoption.User.Email,
-                            PhoneNumber = adoption.User.PhoneNumber,
-                        };
-                        listUser.Add(userAdoptionResponse);
-                    }
-
-
-                    foreach (var user in listUser)
-                    {
-                        sb.AppendLine($"Adoption ID: {user.AdoptionId}");
-                        sb.AppendLine($"Adoption Date: {user.AdoptionDate}");
-                        sb.AppendLine($"Pet ID: {user.PetId}");
-                        sb.AppendLine($"Pet Name: {user.PetName}");
-                        sb.AppendLine($"Full Name: {user.Fullname}");
-                        sb.AppendLine($"Address: {user.Address}");
-                        sb.AppendLine($"Email Address: {user.EmailAddress}");
-                        sb.AppendLine($"Phone Number: {user.PhoneNumber}");
-                        sb.AppendLine();
-                    }
-                    return sb.ToString();
+                        AdoptionId = pet.AdoptionId,
+                        AdoptionDate = adoption.AdoptionDate.ToString("dd/MM/yyyy"),
+                        PetId = pet.AdoptionId,
+                        PetName = pet.Name,
+                        Ages = pet.Ages,
+                        Breed = pet.Breed,
+                        Description = pet.Description,
+                        Gender = pet.Gender,
+                        Species = pet.Species,
+                        Status = pet.Status.ToString(),
+                    };
+                    listUser.Add(userAdoptionResponse);
                 }
-                else
-                {
-                    return "There has been no adoption yet";
-                }
+            }
+            return listUser;
+        }
+
+        public async Task<string> ResponseAdoption(string adoptionId, string shelterId, string response, string? reason)
+        {
+            var listPet = await petRepository.GetPetByAdoptionIdAndShelterId(adoptionId, shelterId);
+            int rs = 0;
+            if (listPet == null)
+            {
+                return "No pets are available for adoption";
             }
             else
             {
-                var listPet = await petRepository.GetPetByAdoptionId(adoptionId);
-                int rs = 0;
-                if (listPet == null)
+                if (listPet.ShelterStatus == ShelterStatus.Approved)
                 {
-                    return "No pets are available for adoption";
+                    return "Pet has been adopted";
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("<table style='border-collapse: collapse; width: 100%;'>");
+                sb.AppendLine("<tr style='background-color: #f2f2f2;'>");
+                sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>AdoptionId</th>");
+                sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Pet</th>");
+                sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Shelter</th>");
+                sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Response</th>");
+                sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Reason</th>");
+                sb.AppendLine("</tr>");
+
+                Pet pet = await petRepository.GetPetById(listPet.PetId);
+                if (pet == null)
+                {
+                    return "Pet is not exist";
                 }
                 else
                 {
-                    if(listPet.ShelterStatus == ShelterStatus.Approved)
+                    if (response.ToLower() == "accept" && string.IsNullOrEmpty(reason))
                     {
-                        return "Pet has been adopted";
+                        pet.ShelterStatus = ShelterStatus.Approved;
+                        listPet.Adoption.AdoptionStatus = AdoptionStatus.Accepted;
                     }
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("<table style='border-collapse: collapse; width: 100%;'>");
-                    sb.AppendLine("<tr style='background-color: #f2f2f2;'>");
-                    sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>AdoptionId</th>");
-                    sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Pet</th>");
-                    sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Shelter</th>");
-                    sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Response</th>");
-                    sb.AppendLine("<th style='border: 1px solid #ddd; padding: 8px; text-align: center;'>Reason</th>");
-                    sb.AppendLine("</tr>");
-
-                    Pet pet = await petRepository.GetPetById(listPet.PetId);
-                    if (pet == null)
+                    if (response.ToLower() == "reject" && !string.IsNullOrEmpty(reason))
                     {
-                        return "Pet is not exist";
+                        pet.AdoptionId = null;
+                        pet.ShelterStatus = null;
+                        listPet.Adoption.AdoptionStatus = AdoptionStatus.Rejected;
+                    }
+                    rs = await adoptionRepository.UpdateAdoption(listPet.Adoption);
+                    bool result = await petRepository.UpdatePet(pet);
+                    if (!result)
+                    {
+                        return "Update pet failed";
                     }
                     else
                     {
-                        if (response.ToLower() == "accept" && string.IsNullOrEmpty(reason))
-                        {
-                            pet.ShelterStatus = ShelterStatus.Approved;
-                            listPet.Adoption.AdoptionStatus = AdoptionStatus.Accepted;
-                        }
-                        if (response.ToLower() == "reject" && !string.IsNullOrEmpty(reason))
-                        {
-                            pet.AdoptionId = null;
-                            pet.ShelterStatus = null;
-                            listPet.Adoption.AdoptionStatus = AdoptionStatus.Rejected;
-                        }
-                        rs = await adoptionRepository.UpdateAdoption(listPet.Adoption);
-                        bool result = await petRepository.UpdatePet(pet);
-                        if (!result)
-                        {
-                            return "Update pet failed";
-                        }
-                        else
-                        {
-                            var shelter = await shelterRepository.GetShelters(pet.ShelterId);
-                            sb.AppendLine("<tr>");
-                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{adoptionId}</td>");
-                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{pet.Name}</td>");
-                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{shelter.First().ShelterName}</td>");
-                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{response}</td>");
-                            sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{reason}</td>");
-                            sb.AppendLine("</tr>");
-                        }
+                        var shelter = await shelterRepository.GetShelters(pet.ShelterId);
+                        sb.AppendLine("<tr>");
+                        sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{adoptionId}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{pet.Name}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{shelter.First().ShelterName}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{response}</td>");
+                        sb.AppendLine($"<td style='border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;'>{reason}</td>");
+                        sb.AppendLine("</tr>");
                     }
-                    sb.AppendLine("</table>");
-                    var user = await adoptionRepository.GetUserByAdoptionId(adoptionId);
-                    var emailBody = $@"
-                                    <p>Dear {user.User.FullName},</p>
-                                    <p>We are pleased to send you the response from the center regarding the pet you have adopted.:</p>
-                                    {sb.ToString().Trim()}
-                                    <p>Have a good day</p>
-                                    <p>Best regards,<br/>PAWFund</p>
-                                    ";
-
-                    await emailService.SendEmailAsync(user.User.Email, "Confirm your adoption", emailBody, isHtml: true);
-                    return rs > 0 ? "Confirmed successfully" : "Confirmed failed";
                 }
+                sb.AppendLine("</table>");
+                var user = await adoptionRepository.GetUserByAdoptionId(adoptionId);
+                var emailBody = $@"
+                    <p>Dear {user.User.FullName},</p>
+                    <p>We are pleased to send you the response from the center regarding the pet you have adopted.:</p>
+                    {sb.ToString().Trim()}
+                    <p>Have a good day</p>
+                    <p>Best regards,<br/>PAWFund</p>
+                    ";
+
+                await emailService.SendEmailAsync(user.User.Email, "Confirm your adoption", emailBody, isHtml: true);
+                return rs > 0 ? "Confirmed successfully" : "Confirmed failed";
             }
         }
 
-		public async Task<ServiceResponse<List<ShelterResponse>>> GetAllShelters()
+
+        public async Task<ServiceResponse<List<ShelterResponse>>> GetAllShelters()
 		{
 			List<ShelterResponse> shelterResponses = shelterRepository.GetAllShelters().Result.Select(s => new ShelterResponse
             {

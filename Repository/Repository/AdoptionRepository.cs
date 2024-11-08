@@ -44,7 +44,6 @@ namespace Repository.Repository
         public Task<List<Adoption>> GetAdoptionByUserId(string userId)
         {
             return _dbContext.Adoptions
-                .Include(a => a.Pets)
                 .Where(a => a.UserId == userId)
                 .ToListAsync();
         }

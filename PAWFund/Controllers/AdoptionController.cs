@@ -29,7 +29,7 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpGet("adoptions/{userId}")]
+        [HttpGet("adoptions/userId/{userId}")]
         public async Task<IActionResult> GetAdoptionByUserId([FromRoute][Required] string userId)
         {
             try

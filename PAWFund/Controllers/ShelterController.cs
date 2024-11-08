@@ -6,6 +6,7 @@ using Services.Interface;
 using Services.Models.Request;
 using Services.Models.Response;
 using Services.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace PAWFund.Controllers
 {
@@ -51,12 +52,26 @@ namespace PAWFund.Controllers
             return Ok(result);
         }
 
-        [HttpGet("pets/shelterid/{shelterid}")]
-        public async Task<IActionResult> GetPetByShelterStatus([FromRoute] string shelterid, [FromQuery] string? adoptionId, [FromQuery] string? response, [FromQuery] string? reason)
+        [HttpGet("shelterId/{shelterId}")]
+        public async Task<IActionResult> GetPetByShelterStatus([FromRoute] string shelterId)
         {
             try
             {
-                var result = await shelterService.GetAllPetByShelterStatus(shelterid, adoptionId, response, reason);
+                var result = await shelterService.GetAllPetByShelterStatus(shelterId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPost("adoptionId/{adoptionId}")]
+        public async Task<IActionResult> ResponseAdoption([FromRoute] string adoptionId, [FromQuery][Required] string shelterId, [FromQuery][Required] string response, [FromQuery] string? reason)
+        {
+            try
+            {
+                var result = await shelterService.ResponseAdoption(adoptionId, shelterId,response, reason);
                 return Ok(result);
             }
             catch (Exception ex)

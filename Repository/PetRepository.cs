@@ -64,6 +64,12 @@ namespace Repository
                 .FirstOrDefaultAsync(p => p.Adoption.AdoptionId == adoptionId);
         }
 
+        public async Task<Pet> GetPetByAdoptionIdAndShelterId(string adoptionId, string? shelterId)
+        {
+            return await _context.Pets
+                .Include(p => p.Adoption)
+                .FirstOrDefaultAsync(p => p.Adoption.AdoptionId == adoptionId && p.ShelterId == shelterId);
+        }
 
         public async Task<Pet?> GetPetById(string PetId)
         {

@@ -17,5 +17,6 @@ namespace Services.Models.Response
         public string? Description { get; set; }
         public string Species { get; set; }
         public string Breed { get; set; }
+
     }
 }

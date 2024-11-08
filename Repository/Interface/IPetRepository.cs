@@ -16,6 +16,7 @@ namespace Repository.Interface
         Task DeletePet(string PetId);
         Task<List<Pet>> GetAllPetByShelterStatus(string shelterId);
         Task<Pet> GetPetByAdoptionId(string adoptionId);
+        Task<Pet> GetPetByAdoptionIdAndShelterId(string adoptionId, string? shelterId);
         Task<List<Pet>> GetAllPetByShelter(string shelterId);
         Task<List<Pet>> GetPetsByUserId(string userId);
     }
