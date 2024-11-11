@@ -393,5 +393,22 @@ namespace Services.Services
                 throw new Exception(ex.Message);
             }
         }
-	}
+
+        public Task<ServiceResponse<List<ShelterResponse>>> GetShelterByUserId(string userId)
+        {
+
+            List<ShelterResponse> shelterResponses =  shelterRepository.GetShelterByUserId(userId).Result.Select(s => new ShelterResponse
+            {
+                ShelterId = s.ShelterId,
+                Address = s.Address,
+                Description = s.Description,
+                Email = s.Email,
+                PhoneNumber = s.PhoneNumber,
+                ShelterDate = s.ShelterDate.ToString("dd/MM/yyyy"),
+                ShelterName = s.ShelterName,
+                UserName = s.User.FullName,
+            }).ToList();
+            return Task.FromResult(ServiceResponse<List<ShelterResponse>>.SuccessResponseWithMessage(shelterResponses));
+        }
+    }
 }

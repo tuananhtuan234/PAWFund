@@ -56,5 +56,11 @@ namespace Repository.Repository
 			IQueryable<Shelter> query = _dbContext.Shelters.Include(s => s.User).Where(s => !s.IsDeleted);
 			return await query.ToListAsync();
 		}
-	}
+
+        public Task<List<Shelter>> GetShelterByUserId(string userId)
+        {
+            IQueryable<Shelter> query = _dbContext.Shelters.Include(s => s.User).Where(s => s.UserId == userId && !s.IsDeleted);
+            return query.ToListAsync();
+        }
+    }
 }

@@ -14,7 +14,7 @@ namespace Repository.Interface
         Task<List<Shelter>> GetShelters(string? shelterId);
         Task<List<Shelter>> GetAllShelters();
         Task<Shelter> GetShelterById(string shelterId);
-
+        Task<List<Shelter>> GetShelterByUserId(string userId);
 
     }
 }

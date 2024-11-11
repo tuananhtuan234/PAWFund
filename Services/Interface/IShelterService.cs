@@ -21,6 +21,7 @@ namespace Services.Interface
 		Task<Shelter> GetShelterById(string shelterId);
         Task<ServiceResponse<PagingResult<ShelterResponse>>> GetSheltersPaging(int currentPage, int pageSize, string search);
         Task<List<PetResponse>> GetPetsByUserId(string userId);
+        Task<ServiceResponse<List<ShelterResponse>>> GetShelterByUserId(string userId);
         Task<string> ResponseAdoption(string adoptionId, string shelterId, string response, string? reason);
     }
 }

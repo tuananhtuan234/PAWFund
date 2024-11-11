@@ -107,5 +107,19 @@ namespace PAWFund.Controllers
                 throw new Exception(ex.Message);
             }
         }
+
+        [HttpGet("get-shelter/{userId}")]
+        public async Task<IActionResult> GetShelterByUserId([FromRoute] string userId)
+        {
+            try
+            {
+                var result = await shelterService.GetShelterByUserId(userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
