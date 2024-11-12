@@ -19,5 +19,6 @@ namespace Services.Models.Response
         public string Breed { get; set; }
         public string Status { get; set; }
         public string Image { get; set; }
+        public string ShelterStatus { get; set; }
     }
 }

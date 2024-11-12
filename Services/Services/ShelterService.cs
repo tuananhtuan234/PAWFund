@@ -216,6 +216,7 @@ namespace Services.Services
                         Species = pet.Species,
                         Status = pet.Status.ToString(),
                         Image = urlImage,
+                        ShelterStatus = pet.ShelterStatus.ToString(),
                     };
                     listUser.Add(userAdoptionResponse);
                 }
