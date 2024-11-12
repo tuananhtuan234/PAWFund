@@ -12,11 +12,11 @@ namespace Services.Interface
 {
     public interface IPetService
     {
-        Task<List<Pet>> GetAllPet(string searchterm);
-        Task<PetDetailResponse?> GetPetById(string id);
+        Task<List<PetGetResponse>> GetAllPet(string searchterm);
+        Task<PetGetResponse> GetPetById(string id);
         Task<string> AddPet(PetRequest petRequest);
         Task DeletePet(string id);
         Task<string> UpdatePet(string petId, PetUpdateRequest petUpdateRequest);
-        Task<List<Pet>> GetAllPetByShelter(string shelterId);
+        Task<List<PetGetResponse>> GetAllPetByShelter(string shelterId);
     }
 }
