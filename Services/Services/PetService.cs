@@ -76,6 +76,7 @@ namespace Services.Services
                 {
                     PetId = pet.PetId,
                     ShelterName = shelter.ShelterName,
+                    ShelterStatus = pet.ShelterStatus.ToString(),
                     Name = pet.Name,
                     Gender = pet.Gender,
                     Ages = pet.Ages,
@@ -103,6 +104,7 @@ namespace Services.Services
                 {
                     PetId = pet.PetId,
                     ShelterName = shelter.ShelterName,
+                    ShelterStatus = pet.ShelterStatus.ToString(),
                     Name = pet.Name,
                     Gender = pet.Gender,
                     Ages = pet.Ages,
@@ -131,6 +133,7 @@ namespace Services.Services
             {
                 PetId = pet.PetId,
                 ShelterName = shelter.ShelterName,
+                ShelterStatus = pet.ShelterStatus.ToString(),
                 Name = pet.Name,
                 Gender = pet.Gender,
                 Ages = pet.Ages,
