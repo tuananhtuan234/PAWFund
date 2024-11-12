@@ -19,7 +19,6 @@ namespace Services.Models.Request
         public string? Description { get; set; }       
         public string Species { get; set; }      
         public string Breed { get; set; }
-        public PetStatus Status { get; set; }
 
     }
 }
