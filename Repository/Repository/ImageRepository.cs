@@ -38,5 +38,10 @@ namespace Repository.Repository
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<Image> GetImageByPetId(string id)
+        {
+            return await _context.Images.FirstOrDefaultAsync(i => i.PetId == id);
+        }
     }
 }

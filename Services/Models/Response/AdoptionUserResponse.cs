@@ -25,7 +25,7 @@ namespace Services.Models.Response
         public string CreateDate { get; set; }
         public string? UpdateDate { get; set; }
         public string Status { get; set; }
-        public ICollection<Image> Images { get; set; } = new List<Image>();
+        public string Image { get; set; }
         public string? ShelterStatus { get; set; }
         public string? Reason { get; set; }
     }

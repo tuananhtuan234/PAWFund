@@ -23,14 +23,16 @@ namespace Services.Services
         private readonly IPetRepository petRepository;
         private readonly IAdoptionRepository adoptionRepository;
         private readonly IEmailService emailService;
+        private readonly IImageRepository imageRepository;
 
-        public ShelterService(IShelterRepository shelterRepository, IUserRepository userRepository, IPetRepository petRepository, IAdoptionRepository adoptionRepository, IEmailService emailService)
+        public ShelterService(IShelterRepository shelterRepository, IUserRepository userRepository, IPetRepository petRepository, IAdoptionRepository adoptionRepository, IEmailService emailService, IImageRepository imageRepository)
         {
             this.shelterRepository = shelterRepository;
             this.userRepository = userRepository;
             this.petRepository = petRepository;
             this.adoptionRepository = adoptionRepository;
             this.emailService = emailService;
+            this.imageRepository = imageRepository;
         }
         public async Task<ServiceResponse<ShelterRequest>> AddShelter(ShelterRequest shelterRequest)
         {
@@ -195,6 +197,12 @@ namespace Services.Services
                 foreach (Pet pet in pets)
                 {
                     Adoption adoption = await adoptionRepository.GetAdoptionIncludeUser(pet.AdoptionId);
+                    string urlImage = null;
+                    Image image = await imageRepository.GetImageByPetId(pet.PetId);
+                    if (image != null)
+                    {
+                        urlImage = image.UrlImage;
+                    }
                     var userAdoptionResponse = new UserAdoptionResponse()
                     {
                         AdoptionId = pet.AdoptionId,
@@ -207,6 +215,7 @@ namespace Services.Services
                         Gender = pet.Gender,
                         Species = pet.Species,
                         Status = pet.Status.ToString(),
+                        Image = urlImage,
                     };
                     listUser.Add(userAdoptionResponse);
                 }

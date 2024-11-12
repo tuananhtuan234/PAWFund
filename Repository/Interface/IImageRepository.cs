@@ -12,5 +12,6 @@ namespace Repository.Interface
         Task DeleteImage(string imageId);
         Task<Image> GetImageById(string id);
         Task<bool> AddImage(Image image);
+        Task<Image> GetImageByPetId(string id);
     }
 }
