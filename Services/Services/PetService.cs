@@ -47,7 +47,7 @@ namespace Services.Services
                 Breed = petRequest.Breed,
                 CreateDate = DateTime.Now,
                 UpdateDate = null,
-                Status = petRequest.Status,
+                Status = PetStatus.Accept,
                 AdoptionId = null,
                 ShelterStatus = null,
                 Reason = null,
