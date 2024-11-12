@@ -14,6 +14,7 @@ namespace Services.Models.Response
     {     
         public string PetId { get; set; }
         public string ShelterName { get; set; }
+        public string ShelterStatus { get; set; }
         public string Name { get; set; }
         public bool Gender { get; set; }
         public int Ages { get; set; }
