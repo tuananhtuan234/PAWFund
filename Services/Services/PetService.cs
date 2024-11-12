@@ -65,34 +65,82 @@ namespace Services.Services
             await _repository.DeletePet(id);
         }
 
-        public Task<List<Pet>> GetAllPet(string searchterm)
+        public async Task<List<PetGetResponse>> GetAllPet(string searchterm)
         {
-            return _repository.GetAllPet(searchterm);
+            List<PetGetResponse> responsePets = new List<PetGetResponse>();
+            var listPet = await _repository.GetAllPet(searchterm);
+            foreach(var pet in listPet)
+            {
+                var shelter = await _shelterRepository.GetShelterById(pet.ShelterId);
+                PetGetResponse newPet = new PetGetResponse()
+                {
+                    PetId = pet.PetId,
+                    ShelterName = shelter.ShelterName,
+                    Name = pet.Name,
+                    Gender = pet.Gender,
+                    Ages = pet.Ages,
+                    Description = pet.Description,
+                    Species = pet.Species,
+                    Breed = pet.Breed,
+                    CreateDate = DateTime.Now,
+                    UpdateDate = DateTime.Now,
+                    Status = pet.Status,
+                    Images = pet.Images,
+                };
+                responsePets.Add(newPet);
+            }
+            return responsePets;
         }
 
-		public async Task<List<Pet>> GetAllPetByShelter(string shelterId)
+		public async Task<List<PetGetResponse>> GetAllPetByShelter(string shelterId)
 		{
-            return await _repository.GetAllPetByShelter(shelterId);
-		}
+            List<PetGetResponse> responsePets = new List<PetGetResponse>();
+            var listPet = await _repository.GetAllPetByShelter(shelterId);
+            foreach (var pet in listPet)
+            {
+                var shelter = await _shelterRepository.GetShelterById(shelterId);
+                PetGetResponse newPet = new PetGetResponse()
+                {
+                    PetId = pet.PetId,
+                    ShelterName = shelter.ShelterName,
+                    Name = pet.Name,
+                    Gender = pet.Gender,
+                    Ages = pet.Ages,
+                    Description = pet.Description,
+                    Species = pet.Species,
+                    Breed = pet.Breed,
+                    CreateDate = DateTime.Now,
+                    UpdateDate = DateTime.Now,
+                    Status = pet.Status,
+                    Images = pet.Images,
+                };
+                responsePets.Add(newPet);
+            }
+            return responsePets;
+        }
 
-		public async Task<PetDetailResponse> GetPetById(string id)
+		public async Task<PetGetResponse> GetPetById(string id)
         {
             var pet = await _repository.GetPetById(id);
+            var shelter = await _shelterRepository.GetShelterById(pet.ShelterId);
             if (pet == null)
             {
                 return null;
             }
-            var petResponse = new PetDetailResponse()
+            var petResponse = new PetGetResponse()
             {
                 PetId = pet.PetId,
-                ShelterId = pet.ShelterId,
-                UserId = pet.Shelter.UserId,
-                AdoptionId = pet.AdoptionId,
+                ShelterName = shelter.ShelterName,
                 Name = pet.Name,
+                Gender = pet.Gender,
+                Ages = pet.Ages,
                 Description = pet.Description,
                 Species = pet.Species,
                 Breed = pet.Breed,
-                Status = pet.Status.ToString(),
+                CreateDate = DateTime.Now,
+                UpdateDate = DateTime.Now,
+                Status = pet.Status,
+                Images = pet.Images,
             };
             return petResponse;
         }
