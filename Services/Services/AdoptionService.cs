@@ -22,7 +22,8 @@ namespace Services.Services
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
-        public AdoptionService(IAdoptionRepository adoptionRepository, IPetRepository petRepository, IShelterRepository shelterRepository, IEmailService emailService, IMapper mapper, IUserRepository userRepository) 
+        private readonly IImageRepository _imageRepository;
+        public AdoptionService(IAdoptionRepository adoptionRepository, IPetRepository petRepository, IShelterRepository shelterRepository, IEmailService emailService, IMapper mapper, IUserRepository userRepository, IImageRepository imageRepository) 
         {
             _adoptionRepository = adoptionRepository;
             _petRepository = petRepository;
@@ -30,6 +31,7 @@ namespace Services.Services
             _emailService = emailService;
             _mapper = mapper;
             _userRepository = userRepository;
+            _imageRepository = imageRepository;
         }
 
 
@@ -196,6 +198,12 @@ namespace Services.Services
                     if (pet != null)
                     {
                         Shelter shelter = await _shelterRepository.GetShelterById(pet.ShelterId);
+                        string urlImage = null;
+                        Image image = await _imageRepository.GetImageByPetId(pet.PetId);
+                        if (image != null) 
+                        {
+                            urlImage = image.UrlImage;
+                        }
                         AdoptionUserResponse user = new AdoptionUserResponse()
                         {
                             AdoptionDate = item.AdoptionDate.ToString("dd/MM/yyyy"),
@@ -206,7 +214,7 @@ namespace Services.Services
                             CreateDate = pet.CreateDate.ToString("dd/MM/yyyy"),
                             Description = pet.Description,
                             Gender = pet.Gender,
-                            Images = pet.Images,
+                            Image = urlImage,
                             Name = pet.Name,
                             PetId = pet.PetId,
                             Reason = pet.Reason,
