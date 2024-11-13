@@ -2,6 +2,7 @@
 using Repository.Data.Enum;
 using Repository.Interface;
 using Repository.Models;
+using Repository.Repository;
 using Services.Helper;
 using Services.Interface;
 using Services.Models.Request;
@@ -100,24 +101,24 @@ namespace Services.Services
                 User user = checkUser.First();
                 if (string.IsNullOrEmpty(code))
                 {
-                    var checkEmai = await _repository.GetUser(userRequest.Email, null, null, null);
-                    if (checkEmai.Count() == 0)
+                    var getUser = await _repository.GetUserById(userId);
+                    getUser.FullName = userRequest.FullName != null ? userRequest.FullName : getUser.FullName;
+                    getUser.Password = userRequest.Password != null ? userRequest.Password : getUser.Password;
+                    getUser.PhoneNumber = userRequest.PhoneNumber != null ? userRequest.PhoneNumber : getUser.PhoneNumber;
+                    getUser.Email = userRequest.Email != null ? userRequest.Email : getUser.Email;
+                    if (userRequest.Role != null && Enum.TryParse<RoleStatus>(userRequest.Role, out var parsedRole))
                     {
-                        string codeRandom = GenerateCode();
-
-                        user.Status = false;
-                        user.Code = codeRandom;
-
-                        result = await _repository.UpdateUser(user);
-                        if (result)
-                        {
-                            await _emailService.SendEmailAsync(userRequest.Email, "Confirm your account", $"Here is your code: {codeRandom}. Please enter this code to authenticate your account.", true);
-                            return ServiceResponse<User>.SuccessResponseOnlyMessage("The system has sent the code via email. Please enter the code");
-                        }
-                        else
-                        {
-                            return ServiceResponse<User>.ErrorResponse("Update failed");
-                        }
+                        getUser.Role = parsedRole;
+                    }
+                    getUser.IsDeleted = userRequest.IsDeleted;
+                    result = await _repository.UpdateUser(user);
+                    if (result)
+                    {
+                        return ServiceResponse<User>.SuccessResponseOnlyMessage();
+                    }
+                    else
+                    {
+                        return ServiceResponse<User>.ErrorResponse("Update failed");
                     }
                 }
                 else 
@@ -128,14 +129,17 @@ namespace Services.Services
                         return ServiceResponse<User>.ErrorResponse("Code wrong");
                     }
                     user.UserId = userId;
-                    user.FullName = userRequest.FullName;
-                    user.Password = userRequest.Password;
-                    user.PhoneNumber = userRequest.PhoneNumber;
-                    user.Email = userRequest.Email;
+                    user.FullName = userRequest.FullName != null ? userRequest.FullName : user.FullName;
+                    user.Password = userRequest.Password != null ? userRequest.Password : user.Password;
+                    user.PhoneNumber = userRequest.PhoneNumber != null ? userRequest.PhoneNumber : user.PhoneNumber;
+                    user.Email = userRequest.Email != null ? userRequest.Email : user.Email;
                     user.CreatedDate = user.CreatedDate;
                     user.Code = user.Code;
                     user.IsDeleted = user.IsDeleted;
-                    user.Role = (RoleStatus)userRequest.Role;
+                    if (userRequest.Role != null && Enum.TryParse<RoleStatus>(userRequest.Role, out var parsedRole))
+                    {
+                        user.Role = parsedRole;
+                    }
                     user.Status = true;
                     user.UpdatedDate = DateTime.UtcNow;
                     user.Address = userRequest.Address;
@@ -152,7 +156,6 @@ namespace Services.Services
                 }
 
             }
-            return null;
         }
 
         public async Task<ServiceResponse<List<UserResponse>>> GetAllUser()
@@ -184,6 +187,56 @@ namespace Services.Services
         public async Task<User> GetUserById(string id)
         {
             return await _repository.GetUserById(id);
+        }
+
+        public async Task<ServiceResponse<PagingResult<UserResponse>>> GetUsersPaging(int currentPage, int pageSize, string search)
+        {
+            // Get all Users from the repository
+            var allUsers = await _repository.GetUser(search, null, null, null);
+            // Calculate the total number of pages
+            int totalUsers = allUsers.Count;
+            int totalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+
+            // Ensure the currentPage is within valid bounds
+            currentPage = Math.Max(1, Math.Min(currentPage, totalPages));
+
+            // Get the subset of Users for the current page
+            var paginatedUsers = allUsers
+                .Skip((currentPage - 1) * pageSize)  // Skip the number of items for previous pages
+                .Take(pageSize)                      // Take the number of items for this page
+                .Select(s => new UserResponse
+                {
+                    UserId = s.UserId,
+                    Address = s.Address,
+                    FullName = s.FullName,
+                    Email = s.Email,
+                    PhoneNumber = s.PhoneNumber,
+                    Role = s.Role.ToString(),
+                    CreatedDate = s.CreatedDate.ToString("dd/MM/yyyy"),
+                    UpdatedDate = s.UpdatedDate?.ToString("dd/MM/yyyy"),
+                    Code = s.Code,
+                    IsDeleted = s.IsDeleted,
+                    Status = s.Status
+                })
+                .ToList();
+
+            // Prepare the paging result
+            var pagingResult = new PagingResult<UserResponse>(
+                totalUsers,    // totalItems
+                totalPages,       // totalPages
+                currentPage,      // currentPage
+                pageSize,         // pageSize
+                search,           // search
+                paginatedUsers // Items
+            );
+
+            // Return the result wrapped in a ServiceResponse
+            return new ServiceResponse<PagingResult<UserResponse>>
+            {
+                Data = pagingResult,
+                Success = true,
+                SuccessMessage = "Users retrieved successfully."
+            };
         }
     }
 }

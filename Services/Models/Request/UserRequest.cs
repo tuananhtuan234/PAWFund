@@ -13,17 +13,14 @@ namespace Services.Models.Request
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
-        [Required]
-        public string Password { get; set; }
-        [Required]
-        public string FullName { get; set; }
-        [Required]
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+        public string? FullName { get; set; }
         [Phone]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? Address { get; set; } 
         [Required]
-        public string Address { get; set; } 
-        [Required]
-        public int Role { get; set; }
+        public string Role { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
