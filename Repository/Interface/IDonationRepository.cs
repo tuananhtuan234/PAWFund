@@ -15,5 +15,6 @@ namespace Repository.Interface
         Task<bool> UpdateDonation(Donation donation);
         Task DeleteDonationById(string donationId);
         Task<List<Donation>> GetListDonationbyUserId(string userId);
+        Task<List<Donation>> GetListDonationbyShelterId(string shelterId);
     }
 }

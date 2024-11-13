@@ -44,6 +44,11 @@ namespace Repository.Repository
            return await _context.Donations.FirstOrDefaultAsync(sc => sc.DonationId.Equals(donationId));
         }
 
+        public async Task<List<Donation>> GetListDonationbyShelterId(string shelterId)
+        {
+            return await _context.Donations.Where(sc => sc.ShelterId.Equals(shelterId)).Include(d => d.User).Include(d => d.Payment).ToListAsync();
+        }
+
         public async Task<List<Donation>> GetListDonationbyUserId(string userId)
         {
             return await _context.Donations.Where(sc => sc.UserId.Equals(userId)).ToListAsync();

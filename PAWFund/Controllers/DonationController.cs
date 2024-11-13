@@ -41,6 +41,17 @@ namespace PAWFund.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpGet("get-by-shelter/{shelterId}")]
+        public async Task<IActionResult> GetListDonationByShelterId([FromRoute] string shelterId)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _donationServices.GetListDonationbyShelterId(shelterId);
+                return Ok(result);
+            }
+            return BadRequest(ModelState);
+        }
+
         [HttpGet("id")]
         public async Task<IActionResult> GetDonationById(string donationId)
         {

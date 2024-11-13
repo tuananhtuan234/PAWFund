@@ -101,6 +101,25 @@ namespace Services.Services
             }
         }
 
+        public async Task<List<DonationCustomerResponse>> GetListDonationbyShelterId(string shelterId)
+        {
+            var donation = await _donationRepository.GetListDonationbyShelterId(shelterId);
+            List<DonationCustomerResponse> donationCustomerResponses = new List<DonationCustomerResponse>();
+            DonationCustomerResponse response = new DonationCustomerResponse();
+            foreach (var item in donation)
+            {
+                response.DonationId = item.DonationId;
+                response.Amount = item.Amount;
+                response.DonationDate = item.DonationDate;
+                response.UserName = item.User.FullName;
+                response.UserId = item.UserId;
+                response.ShelterId = item.ShelterId;
+                response.PaymentId = item.Payment != null ? item.Payment.PaymentId : null;
+                donationCustomerResponses.Add(response);
+            }
+            return donationCustomerResponses;
+        }
+
         public async Task<List<Donation>> GetListDonationbyUserId(string userId)
         {
             return await _donationRepository.GetListDonationbyUserId(userId);
