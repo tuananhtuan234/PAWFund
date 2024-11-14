@@ -18,6 +18,8 @@ namespace Services.Interface
         Task<ServiceResponse<User>> UpdateUser(string userId, UserRequest user, string? code);
         Task<ServiceResponse<User>> DeleteUser(string userId);
         Task<ServiceResponse<List<UserResponse>>> GetAllUser();
-        Task<User> GetUserById(string id);
+        Task<User> GetUserById(string id); 
+        Task<ServiceResponse<PagingResult<UserResponse>>> GetUsersPaging(int currentPage, int pageSize, string search);
+
     }
 }

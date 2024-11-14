@@ -10,6 +10,7 @@ using Repository.Models;
 using Services.Interface;
 using Services.Models.Request;
 using Services.Models.Response;
+using Services.Services;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -56,7 +57,7 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpDelete("user/id/{userId}")]
+        [HttpDelete("user/delete/{userId}")]
         public async Task<IActionResult> DeleteUser([FromRoute]string userId)
         {
             try
@@ -70,18 +71,30 @@ namespace PAWFund.Controllers
             }
         }
 
-        [HttpPut("user/id/{userId}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] string userId, [FromBody] UserRequest userRequest, [FromQuery] string? code)
+        [HttpPut("user/update/{userId}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] string userId, [FromBody] UserRequest userRequest)
         {
             try
             {
-                var user = await _services.UpdateUser(userId, userRequest, code);
+                var user = await _services.UpdateUser(userId, userRequest, null);
                 return Ok(user);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet("paging-user")]
+        public async Task<IActionResult> GetUsersPaging([FromQuery] int currentPage, [FromQuery] int pageSize, [FromQuery] string? search)
+        {
+            var result = await _services.GetUsersPaging(currentPage, pageSize, search);
+            return Ok(result);
+        }
+        [HttpGet("user/all-role")]
+        public IActionResult GetAllRole()
+        {
+            var roles = Enum.GetNames(typeof(RoleStatus));
+            return Ok(roles);
         }
     }
 }
