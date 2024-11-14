@@ -13,6 +13,7 @@ namespace Services.Models.Response
     public class PetGetResponse
     {     
         public string PetId { get; set; }
+        public string ShelterId { get; set; }
         public string ShelterName { get; set; }
         public string ShelterStatus { get; set; }
         public string Name { get; set; }

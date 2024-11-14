@@ -75,6 +75,7 @@ namespace Services.Services
                 PetGetResponse newPet = new PetGetResponse()
                 {
                     PetId = pet.PetId,
+                    ShelterId = shelter.ShelterId,
                     ShelterName = shelter.ShelterName,
                     ShelterStatus = pet.ShelterStatus.ToString(),
                     Name = pet.Name,
@@ -103,6 +104,7 @@ namespace Services.Services
                 PetGetResponse newPet = new PetGetResponse()
                 {
                     PetId = pet.PetId,
+                    ShelterId = shelterId,
                     ShelterName = shelter.ShelterName,
                     ShelterStatus = pet.ShelterStatus.ToString(),
                     Name = pet.Name,
@@ -133,6 +135,7 @@ namespace Services.Services
             {
                 PetId = pet.PetId,
                 ShelterName = shelter.ShelterName,
+                ShelterId = shelter.ShelterId,
                 ShelterStatus = pet.ShelterStatus.ToString(),
                 Name = pet.Name,
                 Gender = pet.Gender,
