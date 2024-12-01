@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Data.Entity
 {
-    [Table("Adoption")]
+    
     public partial class Adoption
     {
         [Key]
@@ -23,5 +23,7 @@ namespace Repository.Data.Entity
         public string? Reason { get; set; }
         public string? PetId { get; set; }
         public ICollection<Pet> Pets { get; set; } = new List<Pet>();
+        public ICollection<History> Histories { get; set; } = new List<History>();
+
     }
 }

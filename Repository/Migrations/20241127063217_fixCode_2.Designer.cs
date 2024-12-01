@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository.Data.Entity;
 
@@ -11,9 +12,11 @@ using Repository.Data.Entity;
 namespace Repository.Migrations
 {
     [DbContext(typeof(PawFundDbContext))]
-    partial class PawFundDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241127063217_fixCode_2")]
+    partial class fixCode_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,38 +112,6 @@ namespace Repository.Migrations
                     b.HasIndex("ShelterId");
 
                     b.ToTable("Event");
-                });
-
-            modelBuilder.Entity("Repository.Data.Entity.History", b =>
-                {
-                    b.Property<string>("HistoryId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AdoptionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("HistoryId");
-
-                    b.HasIndex("AdoptionId");
-
-                    b.ToTable("History");
                 });
 
             modelBuilder.Entity("Repository.Data.Entity.Image", b =>
@@ -400,17 +371,6 @@ namespace Repository.Migrations
                     b.Navigation("Shelter");
                 });
 
-            modelBuilder.Entity("Repository.Data.Entity.History", b =>
-                {
-                    b.HasOne("Repository.Data.Entity.Adoption", "Adoption")
-                        .WithMany("Histories")
-                        .HasForeignKey("AdoptionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Adoption");
-                });
-
             modelBuilder.Entity("Repository.Data.Entity.Image", b =>
                 {
                     b.HasOne("Repository.Data.Entity.Pet", "Pet")
@@ -483,8 +443,6 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.Data.Entity.Adoption", b =>
                 {
-                    b.Navigation("Histories");
-
                     b.Navigation("Pets");
                 });
 

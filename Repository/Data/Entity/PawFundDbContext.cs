@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Data.Entity
 {
-    public partial class PawFundDbContext: DbContext
+    public partial class PawFundDbContext : DbContext
     {
         public PawFundDbContext()
         {
@@ -29,6 +29,8 @@ namespace Repository.Data.Entity
         public virtual DbSet<UserEvent> UserEvents { get; set; }
         public virtual DbSet<Event> Events { get; set; }
         public virtual DbSet<Image> Images { get; set; }
+        public virtual DbSet<History> Histories { get; set; }
+
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
@@ -111,6 +113,13 @@ namespace Repository.Data.Entity
             .WithMany(p => p.Images)
             .HasForeignKey(i => i.PetId)
             .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<History>()
+            .HasOne(h => h.Adoption)  
+            .WithMany(a => a.Histories)  
+            .HasForeignKey(h => h.AdoptionId)  
+            .OnDelete(DeleteBehavior.NoAction); 
+
 
             // Add more Fluent API configurations as needed
 
